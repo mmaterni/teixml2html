@@ -1,0 +1,16 @@
+xx*.py
+html/
+htmlf/
+xsl/
+xml/
+log/
+bin/
+wrk/
+back/
+*.sh
+teimed2html.egg-info7
+build/
+.vscode/
+.history/
+__pycache__/
+*.code-workspace
