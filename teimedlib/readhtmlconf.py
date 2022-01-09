@@ -138,19 +138,17 @@ def tags_cvs2json(csv, html_tag_type):
             sys.exit(1)
     return js
 
-"""
-def read_html_conf(csv_path, html_tag_type):
+
+def read_html_tag(csv_path, html_tag_type):
     with open(csv_path, "r+") as f:
         csv = f.readlines()
     js = tags_cvs2json(csv, html_tag_type)
     return js
-"""
 
-def read_html_tag(csv_path, html_tag_type):
-    with open(csv_path, "r+") as f:
-        txt = f.read()
-    a=txt
-    txt=txt.replace(f'{os.linesep}','')
-    csv=txt.split(os.linesep)
-    js = tags_cvs2json(csv, html_tag_type)
-    return js
+
+# def read_html_tag(csv_path, html_tag_type):
+#     with open(csv_path, "r") as f:
+#         txt = f.read()
+#     csv=txt.split(os.linesep)
+#     js = tags_cvs2json(csv, html_tag_type)
+#     return js

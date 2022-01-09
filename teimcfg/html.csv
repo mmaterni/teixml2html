@@ -5,7 +5,9 @@ x|x+y|_xy_
 
 x|null|null
 
-x|tei|body
+x|tei|XXX|
+x|body|XXX|
+x|back|XXX|
 
 x|div|div|type,ref|class:div_text|text_null
 x|pb|div|id,n|class:pb
@@ -130,7 +132,7 @@ i|rdg+3|a||href:#,class:rdg_3
 d|rs|XXX
 i|rs|span||class:rs_int_%type%
 
-x|span|span|from,to,type
+x|span|span|from,to,type|||
 
 d|note|span>a||class:annotaz|<a href="#">%text%
 i|note|span>a||class:annotaz_int

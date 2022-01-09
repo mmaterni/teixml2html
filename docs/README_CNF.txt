@@ -32,7 +32,7 @@ before_id
     dei file della diplmatica da quelli dell'interpretativa
 
 ========================================
-file delle entity htm
+file delle entity html
 
 type|xml_tag|tag|keys|attrs|text|par1ams|par1ent
 
@@ -54,11 +54,11 @@ tag
   tag HTML
 
 keys
-  elemco keys degli degli attributi di xml d
-  a utilizzare nella trasformazione
+  elemco keys degli attributi di xml da
+  utilizzare nella trasformazione
 
 attrs
-  attributi da aggiungere in HTMLF
+  attributi da aggiungere in HTML
 
 text
   testo da aggiungere in HTML

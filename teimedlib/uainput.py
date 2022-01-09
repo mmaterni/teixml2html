@@ -28,7 +28,7 @@ class Inp:
     def equals(self, s):
         return self.last == s
 
-    @ property
+    @property
     def prn(self):
         return self.ok_prn
 
