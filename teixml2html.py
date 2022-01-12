@@ -18,8 +18,8 @@ from teimedlib.uainput import Inp
 from teimedlib.ualog import Log
 from teimedlib import file_utils as fu
 
-__date__ = "31-12-2021"
-__version__ = "0.0.1"
+__date__ = "11-01-2022"
+__version__ = "0.0.2"
 __author__ = "Marta Materni"
 
 
@@ -53,8 +53,8 @@ class Xml2Html:
         log_conf.open("log/teimcfg.json", 0)
         log.open("log/teixml2html.log", 0)
         log_err.open("log/teixml2html.ERR.log", 1)
-        log_csv_err.open("log/csv.ERR.log", 1)
-        log_html_err.open("log/html.ERR.log", 1)
+        log_csv_err.open("log/teixml2html.csv.ERR.log", 1)
+        log_html_err.open("log/teixml2html.html.ERR.log", 1)
         log_debug.open("log/DEBUG.log", -1)
 
         self.xml_path = None
@@ -115,7 +115,7 @@ class Xml2Html:
                 tag = tag[pid + 1:]
             return tag.strip()
         except Exception as e:
-            log_err.log("ERROR in xml")
+            log_err.log("ERROR node_tag() ")
             log_err.log(str(e))
             return "XXX"
 
@@ -221,7 +221,8 @@ class Xml2Html:
             log_debug.log(text)
             log_debug.log("")
         except Exception as e:
-            log_csv_err.log(f"ERROR in csv {str(e)}")
+            log_csv_err.log(f"ERROR set_text_xitems()")
+            log_csv_err.log(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("params:", pp(xitems))
             tag_w_last = self.get_tag_w_last()
@@ -327,7 +328,8 @@ class Xml2Html:
                 if t0 != text:
                     ok = True
         except Exception as e:
-            log_csv_err.log(f"ERROR in csv {str(e)}")
+            log_csv_err.log(f"ERROR  replace_text()")
+            log_csv_err(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("text_par:", text_par)
             tag_w_last = self.get_tag_w_last()
@@ -426,15 +428,13 @@ class Xml2Html:
             else:
                 csv_tag = xml_tag
                 self.csv_tag_ctrl = csv_tag
-        # TODO forse bisoggna usrare self.csv_tag_ctrl
         # nel test non si è mai verificato
         if self.csv_tag_ctrl != csv_tag:
-            print("****************")
-            print(f"xml_tag: {xml_tag}")
-            print(f"csv_tag: {csv_tag}")
-            print(f"csv_tag_ctrl: {self.csv_tag_ctrl}")
-            print(ppx(x_data))
-            print("****************")
+            log_csv_err.log("ERROR get_data_row_html_csv()")
+            log_csv_err.log(f"xml_tag: {xml_tag}")
+            log_csv_err.log(f"csv_tag: {csv_tag}")
+            log_csv_err.log(f"csv_tag_ctrl: {self.csv_tag_ctrl}")
+            log_csv_err.log(ppx(x_data)).prn()
             inp.inp("!")
         self.x_data_dict[csv_tag] = x_data
         return row_data
@@ -456,7 +456,7 @@ class Xml2Html:
                 break
         return tag_w_last
 
-    def build_html_tag(self, x_data):
+    def build_html_data(self, x_data):
         """raccoglie i dati per costruire un elemnt html
         Args:
             x_data (dict): dati presi da xml
@@ -535,7 +535,8 @@ class Xml2Html:
         }
         # ERRORi nella gestione del files csv dei tag html
         if self.csv_tag_ctrl.find('_x') > -1:
-            log_csv_err.log(f"ERROR in csv tag:{self.csv_tag_ctrl}")
+            log_csv_err.log("ERROR build_html_data()")
+            log_csv_err.log(f"in csv tag:{self.csv_tag_ctrl}")
             log_csv_err.log(f"file: {self.xml_path}")
             log_csv_err.log("xml:", ppx(x_data))
             log_csv_err.log("xml:", ppx(x_data))
@@ -588,12 +589,13 @@ class Xml2Html:
                 self.w_liv = 100
         return text, tail
 
-    def html_append(self, nd):
+    def apped_html_data(self, nd):
         """
         estrae da nd x_data
-        invoca build_html_tah()
+        invoca build_html_data()
         setta:h_data
         utilizza self.hb (HtmlBuildr) per costruire HTML
+        popola self.hb
         Args:
             nd (xml.node): nodo xml
         """
@@ -616,7 +618,7 @@ class Xml2Html:
         x_is_parent = x_data['is_parent']
         x_tag = x_data['tag']
         # setta dati per tag html
-        h_data = self.build_html_tag(x_data)
+        h_data = self.build_html_data(x_data)
         h_tag = h_data['tag']
         h_text = h_data['text']
         h_tail = h_data['tail']
@@ -624,7 +626,7 @@ class Xml2Html:
         # se il precedente è un parent contenitor
         prev_is_container = self.is_container_stack[x_liv-1]
         if prev_is_container:
-            # UA
+            # TODO verificare gestione container
             # set_trace()
             # rimpiazza text  nel tag precdente (il container)
             content = f'<{h_tag} {h_attrs}>{h_text}</{h_tag}>{h_tail}'
@@ -634,7 +636,6 @@ class Xml2Html:
             # setta con XXX perrimuovere da aggiungere in quanto
             # è stato inserito nel contente del parent
             h_tag = 'XXX'
-
         # gestione interpretativa
         if self.dipl_inter == 'i':
             h_text = h_text.lower()
@@ -642,7 +643,7 @@ class Xml2Html:
             self.set_pc(x_data)
             if self.pc_active:
                 h_text, h_tail = self.after_pc(x_data, h_data, h_text, h_tail)
-        #
+        # popola self.hb
         if x_is_parent:
             self.hb.opn(x_liv, h_tag, h_attrs, h_text, h_tail)
         else:
@@ -684,7 +685,8 @@ class Xml2Html:
         for i, row in enumerate(rows):
             ms = re.search(ptrn, row)
             if ms is not None:
-                log_html_err.log(f"ERROR nel parametro: {ms.group()}")
+                log_html_err.log("ERROR check_tml()")
+                log_html_err.log(f"parametro: {ms.group()}")
                 log_html_err.log(f"file: {self.xml_path}")
                 if i > 3:
                     log_html_err.log(rows[i-3].strip())
@@ -707,6 +709,47 @@ class Xml2Html:
                 inp.inp('!')
                 #  valutare se exit/1) al verificarsi dell'errore
                 # sys.exit(1)
+
+    def default_conf(self, wtn, di):
+        self.html_teimcfg = {
+            "html_params": {
+                "_MAN_": wtn,
+                "text_null": "",
+                "_QA_": "\"",
+                "_QC_": "\""
+            },
+            "html_tag_file": "teimcfg/html.csv",
+            "html_tag_type": di+":txt",
+            "dipl_inter": di,
+            "before_id": di
+        }
+        try:
+            log_conf.log(pp(self.html_teimcfg).replace("'", '"')).prn(0)
+            #
+            # hrml dipl./inter
+            self.dipl_inter = self.html_teimcfg.get("dipl_inter", None)
+            if self.dipl_inter is None or self.dipl_inter not in ['d', 'i']:
+                raise Exception(f"ERROR dipl_inter: {self.dipl_inter}")
+            #
+            # prefisso di id per diplomatia e interpretativa
+            self.before_id = self.html_teimcfg.get("before_id", None)
+            if self.before_id is None:
+                raise Exception("ERROR before_id is null.")
+            #
+            csv_path = self.html_teimcfg.get("html_tag_file", None)
+            if csv_path is None:
+                raise Exception("ERROR html_tag_file is null.")
+            #
+            # type : d:txt d:syn i:txt i:syn
+            html_tag_type = self.html_teimcfg.get("html_tag_type", None)
+            if html_tag_type is None:
+                raise Exception("ERROR html_tag_type is null.")
+            self.html_tag_teimcfg = read_html_tag(csv_path, html_tag_type)
+            log_conf.log(pp(self.html_tag_teimcfg).replace("'", '"')).prn(0)
+        except Exception as e:
+            log_err.log("ERROR: default_conf()")
+            log_err.log(e)
+            sys.exit(1)
 
     def read_conf(self, json_path):
         try:
@@ -741,7 +784,9 @@ class Xml2Html:
     def write_html(self,
                    xml_path,
                    html_path,
-                   json_path,
+                   conf_path,
+                   wtn,
+                   dipint,
                    write_append='w',
                    debug_liv=0):
         """fa il parse del file xml_path scrive i files:
@@ -750,9 +795,11 @@ class Xml2Html:
         Args:
             xml_path (str]:  file xml
             html_path (str): file html
-            json_path (str): file di configurazoine
+            conf_path (str): file di configurazoine
             write_append(str): modalità output
-            deb (bool, optional): flag per gestione debuf
+            deb (bool, optional): flag per gestione debug
+            wtn:noeme witnes alternativo a json_path
+            dipint:dipl/intr alternaivo a json_pat
         Returns:
             html_path (str): filr name html 
         """
@@ -764,9 +811,21 @@ class Xml2Html:
             if write_append not in ['w', 'a']:
                 raise Exception(
                     f"ERROR in output write/append. {write_append}")
-            # lettur a file configurazione
-            self.read_conf(json_path)
+            try:
+                # lettura file configurazione
+                if len(conf_path) > 1:
+                    self.read_conf(conf_path)
+                elif len(wtn) > 1 and len(dipint) > 0:
+                    self.default_conf(wtn, dipint)
+                else:
+                    raise Exception(
+                        "ERROR teixml2html.py write_html() config is null")
+            except Exception as e:
+                log_err.log("ERROR write_html() 1")
+                log_err.log(e)
+                sys.exit(1)
             # lib per costruziona html
+            # TODO verificare se non settarlo all'inizio
             self.hb = HtmlBuilder()
             # dict dei dati xml con tag come key
             self.x_data_dict = {}
@@ -776,36 +835,35 @@ class Xml2Html:
             self.csv_tag_ctrl = ""
             #
             self.hb.init()
-
             try:
-                parser = etree.XMLParser(remove_blank_text=True)
-                xml_root = etree.parse(self.xml_path, parser)
-                # src=open(self.xml_path,"r").read()
-                # src=src.replace("<TEI>","")
-                # src=src.replace("</TEI>","")
-                # parser = etree.XMLParser(ns_clean=True)
-                # xml_root = etree.XML(src, parser)
+                # parser = etree.XMLParser(remove_blank_text=True)
+                # xml_root = etree.parse(self.xml_path, parser)
+                src = open(self.xml_path, "r").read()
+                src = src.replace("<TEI>", "")
+                src = src.replace("</TEI>", "")
+                # TODO da verificare l'aggiunta di <div>
+                src = "<div>"+src+"</div>"
+                parser = etree.XMLParser(ns_clean=True)
+                xml_root = etree.XML(src, parser)
             except Exception as e:
-                log_err.log("ERROR teixml2html.py write_html() parse_xml")
+                log_err.log("ERROR write_html() 2")
                 log_err.log(e)
                 sys.exit(1)
-
             #########################
             for nd in xml_root.iter():
-                self.html_append(nd)
+                self.apped_html_data(nd)
             #########################
             self.hb.del_tags('XXX')
             self.hb.end()
             """gestisce il settaggio degli overflow
             modifica il parametro html_lst
-            Returns:
-                str: html modificato
-            """
-            html_rows = self.hb.get_tag_lst()
-            html_over = HtmlOvweflow(
-                self.x_data_lst,
-                html_rows,
-                self.html_tag_teimcfg)
+            e quindi hb.html_lst  
+            #TODO  forse si puo passare direttamente hb.tml_lst
+           """
+            html_lst = self.hb.get_tag_lst()
+            html_over = HtmlOvweflow(self.x_data_lst,
+                                     html_lst,
+                                     self.html_tag_teimcfg)
             html_over.set_overflow()
             # controllo dei parametri %par% non settati
             self.check_tml()
@@ -817,9 +875,9 @@ class Xml2Html:
                 f.write(html)
             fu.chmod(self.html_path)
         except Exception as e:
-            log_err.log("ERROR teixml2html.py write_html()")
+            log_err.log("ERROR write_html() 3")
             log_err.log(e)
-            # 
+            #
             ou = StringIO()
             traceback.print_exc(file=ou)
             st = ou.getvalue()
@@ -829,8 +887,8 @@ class Xml2Html:
         return self.html_path
 
 
-def do_mauin(xml, html, conf, wa='w', deb=False):
-    Xml2Html().write_html(xml, html, conf, wa, deb)
+def do_mauin(xml, html, conf_path, wtn, dipint, wa='w', deb=False):
+    Xml2Html().write_html(xml, html, conf_path, wtn, dipint, wa, deb)
 
 
 if __name__ == "__main__":
@@ -851,11 +909,26 @@ if __name__ == "__main__":
                         metavar="",
                         default="w",
                         help="[-wa w/a (w)rite a)ppend) default w")
+
     parser.add_argument('-c',
-                        dest="teimcfg",
-                        required=True,
+                        dest="confpath",
+                        required=False,
+                        default="",
                         metavar="",
                         help="-c <file_conf.json")
+    parser.add_argument('-wt',
+                        dest="wtn",
+                        required=False,
+                        default="",
+                        metavar="",
+                        help="-w <witness>")
+    parser.add_argument('-di',
+                        dest="dipint",
+                        required=False,
+                        default="",
+                        metavar="d)iplomat/i)terpret",
+                        help="-di <d/i>")
+
     parser.add_argument('-i',
                         dest="xml",
                         required=True,
@@ -867,4 +940,10 @@ if __name__ == "__main__":
                         metavar="",
                         help="-o <file_out.html>")
     args = parser.parse_args()
-    do_mauin(args.xml, args.html, args.teimcfg, args.wa, args.deb)
+    do_mauin(args.xml,
+             args.html,
+             args.confpath,
+             args.wtn,
+             args.dipint,
+             args.wa,
+             args.deb)

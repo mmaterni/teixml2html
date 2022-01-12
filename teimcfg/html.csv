@@ -4,10 +4,17 @@ x|x|_x_
 x|x+y|_xy_
 
 x|null|null
-
 x|tei|XXX|
 x|body|XXX|
 x|back|XXX|
+
+
+x|p|div|id,n||
+x|lb|div|id,n||
+x|maritozza|span
+
+
+
 
 x|div|div|type,ref|class:div_text|text_null
 x|pb|div|id,n|class:pb
@@ -66,7 +73,6 @@ d|sic|span||class:sic
 d|corr|XXX
 i|sic|XXX||class:sic_int
 i|corr|span||class:corr|%text%<a href="#" class="corr"><span class="tooltiptext">%sic@text%</span></a>
-
 
 x|persName|div||class:persName
 d|forename|div||class:forename

@@ -32,7 +32,7 @@ before_id
     dei file della diplmatica da quelli dell'interpretativa
 
 ========================================
-file delle entity html
+file delle entity HTML
 
 type|xml_tag|tag|keys|attrs|text|par1ams|par1ent
 
@@ -64,7 +64,7 @@ text
   testo da aggiungere in HTML
 
 par1ams
-  par1ametri nella forma key9,val', key1:val1, ..
+  par1ametri nella forma key0:val0, key1:val1, ..
   da utilizzare per settare attrs e il text di xml
 
 par1ent
@@ -81,13 +81,13 @@ testo sul quale si eseguono le sostituzioni
 i par1ametri nel testo sono indicati con il pattern
 %par1am%
 
-  html_attrs
-    attributi di xml selezionati da csv.c_key + csv.attrs
+html_attrs
+  attributi di xml selezionati da csv.c_key + csv.attrs
 
 par1ametri
  text
     tsto XML
-  par1ams
+  params
     par1ams di csv
   items
     attributi di XML
@@ -96,7 +96,7 @@ sequenza sosituzioni:
   par1ametro     testo
 
   text         html_attrs
-  par1ams       ... (modificto dala recednete sostituzione)
+  par1ams      ... (modificato dalla precednete sostituzione)
   items        ... (modificato dalla precebdente sostituzione)
 
 ---------------------------
@@ -106,8 +106,8 @@ text
 
 ext_items
   par1ametri che uniscono
-    xml pranet items (attributi del par1ente xml se definito in csv
-                      le coppye k,v hanno la forma tag_k,v dove tag è
+    xml pranet items (attributi del parente xml se definito in csv
+                      le coppie k,v hanno la forma tag_k,v dove tag è
                       quella del parent)
     xml items (attributi del nodo xml)
     csv attrs (attributi definiti in csv)
@@ -116,7 +116,7 @@ ext_items
 sequenza sosituzioni:
   par1ametro     testo
 
-  ezx_items     text
+  ext_items     text
   text          ...
   par1ams        '''
 

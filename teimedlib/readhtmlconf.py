@@ -8,7 +8,7 @@ import traceback
 TAG_COL_NUM = 12
 
 logerr = Log("w")
-logerr.open("log/htmlconf.ERR.log", 1)
+logerr.open("log/readhtmlconf.ERR.log", 1)
 
 
 def t_split(s):
@@ -95,8 +95,8 @@ def tags_cvs2json(csv, html_tag_type):
                 for x in ls:
                     kv = x.split(':')
                     if len(kv) !=2 :
-                        logerr.log("readhtmlconf.py")
-                        logerr.log(f'ERROR csv in column attrs; field:{f}{os.linesep}')
+                        logerr.log("tags_cvs2json() 1")
+                        logerr.log(f'csv in column attrs; field:{f}{os.linesep}')
                         logerr.log(row)
                         sys.exit()
                     k=kv[0]
@@ -115,7 +115,7 @@ def tags_cvs2json(csv, html_tag_type):
                 for x in ls:
                     kv = x.split(':')
                     if len(kv) !=2 :
-                        logerr.log("readhtmlconf.py")
+                        logerr.log("tags_cvs2json() 2")
                         logerr.log(f'ERROR csv in column params; field:{f}{os.linesep}')
                         logerr.log(row)
                         sys.exit()
@@ -131,9 +131,9 @@ def tags_cvs2json(csv, html_tag_type):
             js[xml_tag] = row_data
         except Exception as e:
             s = traceback.format_exc()
-            logerr.log("readhtmlconf")
-            logerr.log(s)
+            logerr.log("ERROR tags_cvs2json() 3")
             logerr.log(str(e))
+            logerr.log(s)
             logerr.log(row)
             sys.exit(1)
     return js

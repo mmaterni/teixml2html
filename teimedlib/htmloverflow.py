@@ -5,7 +5,6 @@ from pdb import set_trace
 
 from teimedlib.ualog import Log
 import pprint
-import os
 import sys
 import re
 
@@ -58,6 +57,7 @@ class HtmlOvweflow:
         self.class_pc = 'class="pc'
         self.trace=False
 
+    #TODO verificare se è limitativo usare span aggiungere esistenza from
     def fill_span_list(self):
         for x_data in self.xml_lst:
             x_tag = x_data.get('tag', '')
@@ -66,10 +66,12 @@ class HtmlOvweflow:
                 x_from = x_items.get('from', None)
                 x_to = x_items.get('to', None)
                 x_type = x_items.get('type', None)
+                #TODO potrebbe esistere uno span senza form
                 if x_from is None or x_to is None or x_type is None:
-                    self.logerr.log("fill_span_list ERROR.").prn()
+                    self.logerr.log("ERROR. fill_span_list ()").prn()
                     self.logerr.log(pp(x_data)).prn()
                     sys.exit(1)
+                    #TODO forse un warning r continue
                 item = {
                     "id0": x_from,
                     "id1": x_to,
@@ -169,6 +171,7 @@ class HtmlOvweflow:
                         s=f'{s}{c_text}'
             return s
         except Exception as e:
+            self.logerr.log("ERROR. add_html_class() ")
             self.logerr.log(e)
             self.logerr.log(html_row)
             sys.exit(1)
@@ -222,6 +225,7 @@ class HtmlOvweflow:
                     self.html_lst[i] = row
         if flag == 0:
             # errroe nlla gestione inizio gine
+            self.logerr.log("ERROR. set_html()")
             self.logerr.log(f"{id_from} {id_to}  {span_type}   Not Found")
 
     def set_overflow(self):

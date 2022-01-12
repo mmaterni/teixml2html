@@ -19,7 +19,7 @@ def make_dir(dirname):
             return False
     except Exception as e:
         s=str(e)
-        msg=f"ERROR make_dir{os.linesep}{s}"
+        msg=f"ERROR make_dir(){os.linesep}{s}"
         raise Exception(msg)
 
 def chmod(path):
