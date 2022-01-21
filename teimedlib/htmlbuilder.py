@@ -7,10 +7,11 @@ import os
 BLKS = "                                                         "
 NL = os.linesep
 
- 
+
 class HtmlBuilder:
     """costruisce nodo per nodo un file HTML
     """
+
     def __init__(self):
         self.indent = 2
         self.livx = -1
@@ -91,13 +92,19 @@ class HtmlBuilder:
         return self
 
     # ultimo tag
-    def tag_last(self):
+    def node_last(self):
         return self.tag_lst[-1:][0]
 
+    # ultimi n  tag
+    def node_lst_last(self, n):
+        x = min(n, len(self.tag_lst))
+        s=os.linesep.join(self.tag_lst[-x:])
+        return s
+
     # lista dei tag
-    def get_tag_lst(self):
-        return self.tag_lst
-    
+    # def get_tag_lst(self):
+    #     return self.tag_lst
+
     # modifica ultimo tag costruito
     def upd_tag_last(self, tag):
         last = len(self.tag_lst)-1

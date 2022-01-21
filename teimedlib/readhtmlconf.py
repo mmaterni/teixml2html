@@ -55,16 +55,15 @@ def row_ok(t, e):
 
 
 # x|xml_tag|tag|keys|attrs|text|params|parent!tags|before|after
-def tags_cvs2json(csv, html_tag_type):
+def cvs2json(csv, html_tag_type):
     lsb = ["", "", "", "", "", "", "", ""]
     js = {}
-    # set_trace()
     for row in csv:
         if row.strip() == "":
             continue
         try:
             row_data = {}
-            row = row.replace(os.linesep, '')
+            #TODO row = row.replace(os.linesep, '')
             flds = row.split('|')
             if len(flds) < TAG_COL_NUM:
                 le = len(flds)
@@ -72,13 +71,15 @@ def tags_cvs2json(csv, html_tag_type):
             x = flds[0]
             if row_ok(x,html_tag_type) is False:
                 continue
-            #
+            
             flds = flds[1:]
             xml_tag = flds[0]
+            # salta righe di intestazione
             if xml_tag == 'xml_tag':
                 continue
-            #
+
             flds = [x.strip() for x in flds]
+
             # tag
             tag = flds[1]
             row_data['tag'] = tag
@@ -127,7 +128,7 @@ def tags_cvs2json(csv, html_tag_type):
             f = flds[6]
             if f != '':
                 row_data['parent'] = f
-            #
+            
             js[xml_tag] = row_data
         except Exception as e:
             s = traceback.format_exc()
@@ -139,16 +140,21 @@ def tags_cvs2json(csv, html_tag_type):
     return js
 
 
-def read_html_tag(csv_path, html_tag_type):
-    with open(csv_path, "r+") as f:
-        csv = f.readlines()
-    js = tags_cvs2json(csv, html_tag_type)
-    return js
+def csv_join_row(csv):
+    pass
 
 
-# def read_html_tag(csv_path, html_tag_type):
-#     with open(csv_path, "r") as f:
-#         txt = f.read()
-#     csv=txt.split(os.linesep)
-#     js = tags_cvs2json(csv, html_tag_type)
+# def read_csv(csv_path, html_tag_type):
+#     with open(csv_path, "r+") as f:
+#         csv = f.readlines()
+#     js = cvs2json(csv, html_tag_type)
 #     return js
+
+
+def read_csv(csv_path, html_tag_type):
+    with open(csv_path, "r") as f:
+        txt = f.read()
+    txt=txt.replace(f"\{os.linesep}","")
+    csv=txt.split(os.linesep)
+    js = cvs2json(csv, html_tag_type)
+    return js

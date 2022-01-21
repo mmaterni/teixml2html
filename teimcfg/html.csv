@@ -14,8 +14,6 @@ x|lb|div|id,n||
 x|maritozza|span
 
 
-
-
 x|div|div|type,ref|class:div_text|text_null
 x|pb|div|id,n|class:pb
 
@@ -90,6 +88,7 @@ d|name|div||class:name
 i|name|div||class:name_int
 
 d|expan|span||class:abbrev %corresp%
+
 d|ex|span||class:ex|<a class="ex_ref" href="#">\
 <span class="ex_tooltip">\
 <img src="css/abr/_MAN_/%expan@corresp%.jpg"/>\

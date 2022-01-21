@@ -9,10 +9,10 @@ import sys
 import re
 
 
-def pp(data):
+def pp(data,w=40):
     if data is None:
         return ""
-    return  pprint.pformat(data, indent=2, width=120)
+    return pprint.pformat(data, indent=2, width=w)
 
 
 """
@@ -28,10 +28,11 @@ x|damage|||class:damage%css_end%||css_end:_last
 
 """
 
-TEXT_START= 'txt_start' 
-TEXT_END='txt_end'
-CSS_START='css_start'
-CSS_END='css_end'
+TEXT_START = 'txt_start'
+TEXT_END = 'txt_end'
+CSS_START = 'css_start'
+CSS_END = 'css_end'
+
 
 class HtmlOvweflow:
     """
@@ -47,7 +48,7 @@ class HtmlOvweflow:
             html_lst (lis): lista delle righe html
             html_conf (dict): dict del fie di configurazione csv
         """
-        self.logerr = Log("a")
+        self.logerr = Log("w")
         self.logerr.open("log/overflow.ERR.log", 1)
         self.xml_lst = xml_lst
         self.html_lst = html_lst
@@ -55,23 +56,22 @@ class HtmlOvweflow:
         self.span_lst = []
         self.class_w = 'class="w'
         self.class_pc = 'class="pc'
-        self.trace=False
+        self.trace = False
 
-    #TODO verificare se è limitativo usare span aggiungere esistenza from
     def fill_span_list(self):
         for x_data in self.xml_lst:
             x_tag = x_data.get('tag', '')
             if x_tag == 'span':
                 x_items = x_data.get('items', {})
-                x_from = x_items.get('from', None)
-                x_to = x_items.get('to', None)
-                x_type = x_items.get('type', None)
-                #TODO potrebbe esistere uno span senza form
-                if x_from is None or x_to is None or x_type is None:
+                if not "from" in x_items.keys():
+                    continue
+                x_from = x_items.get('from', "")
+                x_to = x_items.get('to', "")
+                x_type = x_items.get('type', "")
+                if x_from == "" or x_to == "" or x_type == "":
                     self.logerr.log("ERROR. fill_span_list ()").prn()
                     self.logerr.log(pp(x_data)).prn()
-                    sys.exit(1)
-                    #TODO forse un warning r continue
+                    sys.exit()
                 item = {
                     "id0": x_from,
                     "id1": x_to,
@@ -104,7 +104,6 @@ class HtmlOvweflow:
             v = params.get(k, '')
             text = text.replace(f'%{k}%', v)
         return text
-
 
     def add_html_class(self, flag, html_row, span_type):
         """ aggiunge una classe alle righe html in funzione del flag
@@ -143,9 +142,11 @@ class HtmlOvweflow:
                     c_text = self.text_format(c_text, [], {})
             if css_class.find('%') > -1:
                 if flag == 0:
-                    css_class = self.text_format( css_class, [CSS_START], c_params)
+                    css_class = self.text_format(
+                        css_class, [CSS_START], c_params)
                 elif flag == 2:
-                    css_class = self.text_format(css_class, [CSS_END], c_params)
+                    css_class = self.text_format(
+                        css_class, [CSS_END], c_params)
                 else:
                     css_class = self.text_format(css_class, [], {})
             #
@@ -165,10 +166,10 @@ class HtmlOvweflow:
                 if flag == 0:
                     s = s.replace('>', f'>{c_text}', 1)
                 elif flag == 2:
-                    if s.find('</')> -1:
+                    if s.find('</') > -1:
                         s = s.replace('</', f'{c_text}</', 1)
                     else:
-                        s=f'{s}{c_text}'
+                        s = f'{s}{c_text}'
             return s
         except Exception as e:
             self.logerr.log("ERROR. add_html_class() ")
@@ -188,8 +189,7 @@ class HtmlOvweflow:
         if p < 0:
             p = rh.find(self.class_pc)
         return p > -1
-    
-    
+
     def set_html(self, from_to):
         """setta le righe html comprese nellìintervallo from to
         Args:

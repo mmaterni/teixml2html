@@ -6,10 +6,16 @@ from pdb import set_trace
 
 
 class Inp:
-    """livello debig
-    0: disattivato attivato per !!
-    1: attivato solo per !
-    2: attivato sempre input
+    """livello debug
+    0: disattivato 
+    1: attivato solo per msg=!...
+    2: attivato sempre 
+
+    input
+    .  : exit
+    -  : continua 
+    ,  : non fa nulla ( non aggiorna last) ritorna ,
+    ,x : non fa nulla ritorna x
     Args:
         debug_liv (int, optional): 0/1/2
     """
@@ -17,50 +23,46 @@ class Inp:
     def __init__(self):
         self.liv = 0
         self.last = '$'
-        self.ok_prn = False
+        self.v = ''
 
     def set_liv(self, liv='0'):
         if self.liv < 0:
             return
         self.liv = int(liv)
-        self.ok_prn=(self.liv>0)
+        self.ok_prn = (self.liv > 0)
 
-    def equals(self, s):
-        return self.last == s
-
-    @property
-    def prn(self):
-        return self.ok_prn
-
-    def inp(self, p=''):
-        ok=False
-        if self.liv==0:
-            return
-        elif self.liv==1:
-            if p=='!':
-                ok=True
-                self.last=p
-        elif self.liv==2:
-            ok=True
+    def inp(self, p='', msg=''):
+        if self.liv == 0:
+            return ""
+        ok = False
+        if self.liv == 1 and msg.find('!') >= 0:
+            ok = True
+        elif self.liv == 2:
+            ok = True
         if not ok:
-            return
-        if self.last=='$':
-            self.last=p
-        if self.last==p:
-            v = input(p+'>')
-            if v == '.':
+            return ""
+
+        if self.last == '$':
+            self.last = p
+
+        t0 = self.liv == 2 and self.v == ''
+        t1 = self.last == p
+        t2 = p.find(',') == 0
+        t3 = p == '!'
+        if t0 or t1 or t2 or t3:
+            self.v = input(p+msg+'>')
+            if self.v == '.':
                 sys.exit()
-            elif v == '-':
+            elif self.v == '-':
                 self.liv = -1
-                self.ok_prn = False
-            elif v == '--':
-                self.liv = -1
-                self.ok_prn = True
-            elif v=='?':
-                pass
-            elif v!='':
-                self.last=v
+            elif self.v.find(',') == 0:
+                return self.v if len(self.v) == 1 else self.v[1:]
+            elif self.v != '':
+                self.last = self.v
+        return ""
 
-
-
-
+    def stop(self):
+        self.v = input(': ')
+        if self.v.find(',') == 0:
+            return self.v if len(self.v) == 1 else self.v[1:]
+        return self.v

@@ -25,7 +25,7 @@ writehtmlfile.py
      -o <file_out.html>")
 
     copia un  file template html all'interno di un progetto
-    gestitpo da prjmgr.py
+    gestito da prjmgr.py
 
 writehtml.py
     copia un template html all'interno di un progetto
