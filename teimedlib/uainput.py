@@ -55,14 +55,14 @@ class Inp:
                 sys.exit()
             elif self.v == '-':
                 self.liv = -1
-            elif self.v.find(',') == 0:
-                return self.v if len(self.v) == 1 else self.v[1:]
             elif self.v != '':
                 self.last = self.v
         return ""
 
-    def stop(self):
-        self.v = input(': ')
-        if self.v.find(',') == 0:
-            return self.v if len(self.v) == 1 else self.v[1:]
-        return self.v
+    def help(self,msg):
+        x = input(msg)
+        if x == '.':
+            sys.exit()
+        elif x == '-':
+            self.liv = 0
+        return x
