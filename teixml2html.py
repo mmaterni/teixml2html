@@ -8,9 +8,8 @@ from io import StringIO
 import pprint
 import re
 import sys
-from tkinter import E
 import traceback
-from lxml import etree
+#from lxml import etree
 from teimedlib.htmlbuilder import HtmlBuilder
 from teimedlib.htmloverflow import HtmlOvweflow
 from teimedlib.readhtmlconf import read_csv
@@ -18,19 +17,16 @@ from teimedlib.readjson import read_json
 from teimedlib.uainput import Inp
 from teimedlib.ualog import Log
 from teimedlib import file_utils as fu
-from teiprjhtmlmake import LOG
+#from teiprjhtmlmake import LOG
+from teimedlib.xml_node_list import XmlNodeList
 
-__date__ = "16-01-2022"
-__version__ = "0.0.3"
+
+__date__ = "23-01-2022"
+__version__ = "0.0.5"
 __author__ = "Marta Materni"
 
-DEBUG_HTML=False
-LOG_ERR_WA='a'
-
-def pp(data, w=120):
-    s = pprint.pformat(data, indent=2, width=w)
-    return s
-
+DEBUG_HTML = False
+LOG_ERR_WA = 'a'
 
 
 log_conf = Log("w")
@@ -42,6 +38,9 @@ log_debug = Log("a")
 
 inp = Inp()
 
+def pp(data, w=120):
+    s = pprint.pformat(data, indent=2, width=w)
+    return s
 
 def ppx(xdata, w=120):
     d = {}
@@ -51,13 +50,11 @@ def ppx(xdata, w=120):
         d[k] = xdata[k]
     return pp(d, w)
 
-
 class Xml2Html:
 
     def __init__(self):
         log_info.open("log/teixml2html.log", 0)
         log_conf.open("log/teimcfg.json", 0)
-
         log_err.open("log/teixml2html.ERR.log", 1)
         log_csv_err.open("log/teixml2html.csv.ERR.log", 1)
         log_html_err.open("log/teixml2html.html.ERR.log", 1)
@@ -67,157 +64,141 @@ class Xml2Html:
         self.html_path = None
         self.html_cfg = None
         self.html_tag_teimcfg = None
+
         # diplomatica / interpretatova (d/i)
         self.dipl_inter = None
+
         # prefisso di id per diplomarica / interpretativa
         self.before_id = None
-        # HtmlBuilder
         self.hb = HtmlBuilder()
+
         # lista x_data (dati xml)
         self.x_data_lst = None
-        # dizionario di x_data (dati xml)
+        
+        # dizionario di x_data (dati xml) con key csv
+        # utilizzato per trovare il parent come indicato in csv
+        # TODO controllare se possibili alternative
         self.x_data_dict = None
+        
         # stack dei nodi che sono si/no container
+        # BUG verificare funzionamento
         self.is_container_stack = [False for i in range(1, 20)]
+        
         # tag di controllo per erroi csv _x_ _xy_
         self.csv_tag_ctrl = None
-        # flag attivo dopo un .,?,!
-        self.pc_active = False
+
         self.w_liv = 0
         # flag per gestione set_trace()
         self.trace = False
 
-    def node_liv(self, node):
-        d = 0
-        while node is not None:
-            d += 1
-            node = node.getparent()
-        return d - 1
+    # def node_liv(self, node):
+    #     d = 0
+    #     while node is not None:
+    #         d += 1
+    #         node = node.getparent()
+    #     return d - 1
 
-    def clean_key(self, k):
-        s = k
-        p0 = k.find("{http")
-        if (p0 > -1):
-            p1 = k.rfind('}')
-            if p1 > -1:
-                s = k[p1+1:]
-        return s
+    # def clean_key(self, k):
+    #     s = k
+    #     p0 = k.find("{http")
+    #     if (p0 > -1):
+    #         p1 = k.rfind('}')
+    #         if p1 > -1:
+    #             s = k[p1+1:]
+    #     return s
 
-    def node_items(self, nd):
-        kvs = nd.items()
-        js = {}
-        for kv in kvs:
-            k = self.clean_key(kv[0])
-            v = kv[1]
-            js[k] = v
-        return js
+    # def node_items(self, nd):
+    #     kvs = nd.items()
+    #     js = {}
+    #     for kv in kvs:
+    #         k = self.clean_key(kv[0])
+    #         v = kv[1]
+    #         js[k] = v
+    #     return js
 
-    def node_tag(self, nd):
-        try:
-            tag = nd.tag
-            tag = tag if type(nd.tag) is str else "XXX"
-            pid = tag.find('}')
-            if pid > 0:
-                tag = tag[pid + 1:]
-            return tag.strip()
-        except Exception as e:
-            log_err.log(f"ERROR {self.xml_path} node_tag() ")
-            log_err.log(e)
-            return "XXX"
+    # def node_tag(self, nd):
+    #     try:
+    #         tag = nd.tag
+    #         tag = tag if type(nd.tag) is str else "XXX"
+    #         pid = tag.find('}')
+    #         if pid > 0:
+    #             tag = tag[pid + 1:]
+    #         return tag.strip()
+    #     except Exception as e:
+    #         log_err.log(f"ERROR {self.xml_path} node_tag() ")
+    #         log_err.log(e)
+    #         return "XXX"
 
-    def node_id(self, nd):
-        s = ''
-        kvs = nd.items()
-        for kv in kvs:
-            if kv[0].rfind('id') > -1:
-                s = kv[1]
-                break
-        return s
+    # def node_id(self, nd):
+    #     s = ''
+    #     kvs = nd.items()
+    #     for kv in kvs:
+    #         if kv[0].rfind('id') > -1:
+    #             s = kv[1]
+    #             break
+    #     return s
 
-    def node_id_num(self, id):
-        if id == '':
-            return ''
-        m = re.search(r'\d', id)
-        if m is None:
-            return -1
-        p = m.start()
-        return id[p:]
+    # def node_id_num(self, id):
+    #     if id == '':
+    #         return ''
+    #     m = re.search(r'\d', id)
+    #     if m is None:
+    #         return -1
+    #     p = m.start()
+    #     return id[p:]
 
-    def node_text(self, nd):
-        text = nd.text
-        text = '' if text is None else text.strip()
-        text = text.strip().replace(os.linesep, ',,')
-        return text
+    # def node_text(self, nd):
+    #     text = nd.text
+    #     text = '' if text is None else text.strip()
+    #     text = text.strip().replace(os.linesep, ',,')
+    #     return text
 
-    def node_tail(self, nd):
-        tail = '' if nd.tail is None else nd.tail
-        tail = tail.strip().replace(os.linesep, '')
-        return tail
+    # def node_tail(self, nd):
+    #     tail = '' if nd.tail is None else nd.tail
+    #     tail = tail.strip().replace(os.linesep, '')
+    #     return tail
 
-    def node_val(self, nd):
-        ls = []
-        for x in nd.itertext():
-            s = x.strip().replace(os.linesep, '')
-            ls.append(s)
-        texts = ' '.join(ls)
-        s = re.sub(r"\s{2,}", ' ', texts)
-        return s
+    # def node_val(self, nd):
+    #     ls = []
+    #     for x in nd.itertext():
+    #         s = x.strip().replace(os.linesep, '')
+    #         ls.append(s)
+    #     texts = ' '.join(ls)
+    #     s = re.sub(r"\s{2,}", ' ', texts)
+    #     return s
 
-    def node_is_parent(self, nd):
-        cs = nd.getchildren()
-        le = len(cs)
-        return le > 0
+    # def node_is_parent(self, nd):
+    #     cs = nd.getchildren()
+    #     le = len(cs)
+    #     return le > 0
 
-    def get_node_data(self, nd):
-        #         tag= self.node_tag(nd)
-        #         if tag=='l':
-        #             id = self.node_id(nd)
-        #             xml = etree.tostring(nd,
-        #                             method='xml',
-        #                             xml_declaration=None,
-        #                             encoding='unicode',
-        #                             with_tail=True,
-        #                             pretty_print=False,
-        #                             standalone=None,
-        #                             doctype=None,
-        #                             exclusive=False,
-        #                             inclusive_ns_prefixes=None,
-        #                             strip_text=False)
-        #             path="xtest/l"+id
-        #             s=f"""
-        # <div>
-        # <pb xml:id="Gpb1" n="28r" />
-        # <cb xml:id="Gcb1" n="b" />
-        # <lg xml:id="Glg1">
-        # {xml}
-        # </lg>
-        # </div>
-        # """
-        #             open(path,"w").write(s)
+    # def get_node_data(self, nd):
+    #     items = self.node_items(nd)
+    #     id = self.node_id(nd)
+    #     if id != '':
+    #         id_num = self.node_id_num(id)
+    #         items['id_num'] = id_num
+    #     return {
+    #         'id': id,
+    #         'liv': self.node_liv(nd),
+    #         'tag': self.node_tag(nd),
+    #         'text': self.node_text(nd),
+    #         'tail': self.node_tail(nd),
+    #         'items': items,
+    #         # 'keys': self.node_keys(nd),
+    #         'val': self.node_val(nd),
+    #         'is_parent': self.node_is_parent(nd)
+    #     }
 
-        items = self.node_items(nd)
-        id = self.node_id(nd)
-        if id != '':
-            id_num = self.node_id_num(id)
-            items['id_num'] = id_num
-        return {
-            'id': id,
-            'liv': self.node_liv(nd),
-            'tag': self.node_tag(nd),
-            'text': self.node_text(nd),
-            'tail': self.node_tail(nd),
-            'items': items,
-            # 'keys': self.node_keys(nd),
-            'val': self.node_val(nd),
-            'is_parent': self.node_is_parent(nd)
-        }
 
+    # html_attrs = self.set_x_items(html_attrs, x_items)
+    # c_text = self.set_x_items(c_text, x_items)
     def set_x_items(self, src, x_items):
-        """setta un testo parametrizzato con pars:
+        """setta un testo parametrizzato con x_items:
         i parametri del testo sono nella forma
-        %param% nel cso di parametri riferiti a xdata
-        %tag_paren@ù+param% nei parametri che si riferisocono
-        ad un tag parent
+        %param% nel cso di parametr %tag_paren@ù+param% 
+        tag_parent estrae da x_data_dict x_data
+        memorizzato con il tag pag_arente e pren x_items
         NB.
         I parametri  non settati restano nella forma originale
         Args:
@@ -237,7 +218,17 @@ class Xml2Html:
                     pk = k.split('@')
                     tag_p = pk[0]
                     k_p = pk[1]
+                    #UA 
                     x_data_p = self.x_data_dict.get(tag_p, None)
+                    # print("------------------------")
+                    # print(self.xml_path)
+                    # print(src)
+                    # print("x_items: "+pp(x_items))
+                    # print("ks: "+pp(ks))
+                    # print("k: "+k)
+                    # print(tag_p)
+                    # print(pp(x_data_p))
+                    # input("?")
                     if x_data_p is None:
                         raise Exception(f"tag parent {tag_p} not found.")
                     xitems_p = x_data_p['items']
@@ -327,7 +318,19 @@ class Xml2Html:
                 if k.find('@') > -1:
                     pk = k.split('@')
                     tag_p = pk[0]
+                    #UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
+
+                    # print("------------------------")
+                    # print(self.xml_path)
+                    # print(html_attrs)
+                    # print("x_text: "+x_text)
+                    # print("ks: "+pp(ks))
+                    # print("k: "+k)
+                    # print(tag_p)
+                    # print(pp(x_data_p))
+                    # input("?")
+
                     if x_data_p is None:
                         raise Exception(
                             f"tag parent:{tag_p} not found.")
@@ -356,22 +359,35 @@ class Xml2Html:
         ms = re.findall(ptrn, c_text)
         ks = [x.replace('%', '') for x in ms]
         ok = False
+        t0 = c_text
         try:
             for k in ks:
                 # text_par preso da una riga CSV puntata da @
                 if k.find('@') > -1:
                     pk = k.split('@')
                     tag_p = pk[0]
+                    #UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
+
+                    # print("------------------------")
+                    # print(self.xml_path)
+                    # print(c_text)
+                    # print("x_text: "+x_text)
+                    # print("ks: "+pp(ks))
+                    # print("k: "+k)
+                    # print(tag_p)
+                    # print(pp(x_data_p))
+                    # input("?")
+
                     if x_data_p is None:
                         raise Exception(
                             f"tag parent: {tag_p} not found.")
                     x_text = x_data_p['text']
                     ok = True
-                t0 = c_text
+
                 c_text = c_text.replace(f'%{k}%', x_text)
-                if t0 != c_text:
-                    ok = True
+            if t0 != c_text:
+                ok = True
         except Exception as e:
             log_csv_err.log(f"ERROR {self.xml_path} set_text_in_c_text()")
             log_csv_err(e)
@@ -438,8 +454,6 @@ class Xml2Html:
               csv_tag=xml_tag
            se xml_tag è complessa (tag + attrs) e tag is None
               csv_tag_ctrl="_xy_"+csv_tag
-
-
         Args:
             x_data (dict):xml data
         Returns:
@@ -456,6 +470,7 @@ class Xml2Html:
             tag = c_data.get('tag', f"_x_{xml_tag}")
             p = tag.find('+')
             if p > -1:
+                # tag + attrs
                 x_items = x_data['items']
                 # tag|tag + att1_name + attr2_name+..
                 # x_items[attr<n>_name]  => [attr1_val,attr2_val]
@@ -471,6 +486,7 @@ class Xml2Html:
                 else:
                     self.csv_tag_ctrl = csv_tag
             else:
+                # tag semplice
                 csv_tag = xml_tag
                 self.csv_tag_ctrl = csv_tag
         # csv_tag_ctrl = csv_tag se row_data trovato
@@ -483,6 +499,7 @@ class Xml2Html:
             inp.inp("?", "!")
             c_data = {}
             # sys.exit(1)
+        #BUG  popola il dict utilizzando csv_tag come chiave
         self.x_data_dict[csv_tag] = x_data
         return c_data
 
@@ -594,17 +611,19 @@ class Xml2Html:
             inp.inp("?", "!")
         return html_data
 
-    # verifica se è un punto
-    def set_pc(self, x_data):
+    # verifica se . ! ? da seguire con una maiuscola
+    def is_pc_to_up(self, x_data):
         x_tag = x_data['tag']
+        pc_active = False
         if self.w_liv == 0 and x_tag == 'w':
             self.w_liv = x_data['liv']
         if x_tag == 'pc':
             t = x_data['text'].strip()
-            if t in ['.', '?', '!', '^']:
-                self.pc_active = True
+            if t in ['.', '?', '!']:
+                pc_active = True
+        return pc_active
 
-    # gestione delle maiuscole dopo un punto
+    # gestione delle maiuscole dopo un . ! ?
     def after_pc(self, x_data, h_data, text, tail):
         x_liv = x_data['liv']
         x_tag = x_data['tag']
@@ -612,23 +631,21 @@ class Xml2Html:
             self.w_liv = x_liv
             if text.strip() != '':
                 text = text.capitalize()
-                self.pc_active = False
                 self.w_liv = 100
         h_tag = h_data['tag']
         if x_liv > self.w_liv and h_tag != 'XXX':
             if text.strip() != '':
                 # text='X'+text
                 text = text.capitalize()
-                self.pc_active = False
                 self.w_liv = 100
             elif tail.strip() != '':
                 tail = 'Y'+tail
                 # tail=tail.capitalize()
-                self.pc_active = False
                 self.w_liv = 100
         return text, tail
 
-    def apped_html_data(self, nd):
+    #def apped_html_data(self, nd):
+    def apped_html_data(self, x_data):
         """
         estrae da nd x_data
         invoca remove_params_null()
@@ -638,9 +655,9 @@ class Xml2Html:
         Args:
             nd (xml.node): nodo xml
         """
-        x_data = self.get_node_data(nd)
+        #x_data = self.get_node_data(nd)
+        # self.x_data_lst.append(x_data)
 
-        self.x_data_lst.append(x_data)
         x_liv = x_data['liv']
         x_is_parent = x_data['is_parent']
         x_tag = x_data['tag']
@@ -669,8 +686,7 @@ class Xml2Html:
         if self.dipl_inter == 'i':
             h_text = h_text.lower()
             h_tail = h_tail.lower()
-            self.set_pc(x_data)
-            if self.pc_active:
+            if self.is_pc_to_up(x_data) :
                 h_text, h_tail = self.after_pc(x_data, h_data, h_text, h_tail)
 
         # popola self.hb
@@ -863,15 +879,24 @@ class Xml2Html:
             self.csv_tag_ctrl = ""
             self.hb.init("")
 
-            src = open(self.xml_path, "r").read()
-            src = src.replace("<TEI>", "")
-            src = src.replace("</TEI>", "")
-            src = "<body>"+src+"</body>"
-            parser = etree.XMLParser(ns_clean=True)
-            xml_root = etree.XML(src, parser)
 
-            for nd in xml_root.iter():
-                self.apped_html_data(nd)
+
+            # src = open(self.xml_path, "r").read()
+            # src = src.replace("<TEI>", "")
+            # src = src.replace("</TEI>", "")
+            # src = "<body>"+src+"</body>"
+            # parser = etree.XMLParser(ns_clean=True)
+            # xml_root = etree.XML(src, parser)
+            # for nd in xml_root.iter():
+            #     self.apped_html_data(nd)
+            xnl=XmlNodeList()
+            try:
+                self.x_data_lst=xnl.xml_node_data_list(self.xml_path)
+            except Exception as e:
+                log_err.log(e)
+                sys.exit(1)
+            for xd in self.x_data_lst:
+                self.apped_html_data(xd)
 
             # chiude HTML con i tag ancora aperti
             self.hb.end()
@@ -941,32 +966,34 @@ if __name__ == "__main__":
                         required=False,
                         default="",
                         metavar="",
-                        help="-c <file_conf.json")
+                        help="-c <file_conf.json>")
+
     parser.add_argument('-wt',
                         dest="wtn",
                         required=False,
                         default="",
                         metavar="",
-                        help="-w <witness>")
+                        help="-wt <witness>")
+
     parser.add_argument('-di',
                         dest="dipint",
                         required=False,
                         default="",
-                        metavar="d)iplomat/i)terpret",
-                        help="-di <d/i>")
+                        metavar="",
+                        help="-di d/i (d)iplomat/i)terpret)")
 
     parser.add_argument('-wa',
                         dest="wa",
                         required=False,
                         metavar="",
                         default="w",
-                        help="[-wa w/a (w)rite a)ppend) default w")
+                        help="[-wa w/a] (w)rite a)ppend log.err) ")
     parser.add_argument('-d',
                         dest="deb",
                         required=False,
                         metavar="",
                         default=0,
-                        help="[-d 0/1/2](setta livello di debug)")
+                        help="[-d 0/1/2] (debug level)")
     args = parser.parse_args()
     do_main(args.xml,
             args.html,
