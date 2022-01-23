@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from pdb import set_trace
-from re import S
 import sys
 import os
 import pprint
 from teimedlib.xml_node_list import XmlNodeList
+from teimedlib import file_utils as fu
 from lxml import etree
 
 
@@ -111,10 +111,10 @@ class SplitXml:
             if xml != '':
                 pth = F"xml_test/{d_i}/{tag}.xml"
                 s=xml_div(xml)
-                open(pth, "w").write(s)
+                fu.write_path_file(pth,s)
             else:
                 pth = F"xml_test/{d_i}_null/{tag}.xml"
-                open(pth, "w").write("null")
+                fu.write_path_file(pth,"null")
 
         for tag in tag_lst:
             p = tag.find('+')
@@ -125,10 +125,10 @@ class SplitXml:
             if xml != '':
                 pth = F"xml_test/{d_i}/{tag_attr}.xml"
                 s=xml_div(xml)
-                open(pth, "w").write(s)
+                fu.write_path_file(pth,s)
             else:
                 pth = F"xml_test/{d_i}_null/{tag_attr}.xml"
-                open(pth, "w").write("null")
+                fu.write_path_file(pth,"null")
 
     def split_xml(self, xml_path):
         nd_lst = self.xnl.xml_node_list(xml_path)
@@ -147,7 +147,11 @@ def do_main(xp):
 
 
 if __name__ == "__main__":
-    # le=len(sys.argv)
-    #xp = sys.argv[1]
-    xp = "xml/floripar.xml"
+    le=len(sys.argv)
+    if le==1:
+        print("")
+        print("split_xml_for_csv_atg.py  <file_name.xml>")
+        sys.exit()
+    xp = sys.argv[1]
+    #xp = "xml/floripar.xml"
     do_main(xp)

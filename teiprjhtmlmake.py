@@ -187,7 +187,7 @@ if __name__ == "__main__":
         do_main_args(work, witness)
     else:
         print("teiprjhtmlmake.py <project.csv>")
-        print("or if exists work")
-        print("teiprjhtmlmake.py <work> <witnes>")
-        print(help)
+        print("or if exists project")
+        print("teiprjhtmlmake.py <project_name> <witnes_name>")
+        #print(help)
         sys.exit(0)

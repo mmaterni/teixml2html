@@ -272,7 +272,7 @@ prj_cfg = {
 
     "witness_dipl_syn": {
         "html_params": {
-            "_MAN_": "witness",
+            "_WTN_": "witness",
             "text_null": "",
             "_QA_": "\"",
             "_QC_": "\""
@@ -285,7 +285,7 @@ prj_cfg = {
 
     "witness_dipl_txt": {
         "html_params": {
-            "_MAN_": "witness",
+            "_WTN_": "witness",
             "text_null": "",
             "_QA_": "\"",
             "_QC_": "\""

@@ -22,7 +22,6 @@ def exec_test(d_i):
     try:
         for x in lst:
             xml_path = f'{x}'
-            print(xml_path)
             html_path = xml_path.replace("xml", "html")
             wtn = "witness"
             Xml2Html().write_html(xml_path,

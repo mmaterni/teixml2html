@@ -177,7 +177,7 @@ flori_html/prj_teimcfg
 par1_dipl_syn.json
 {
   "html_params": {
-    "_MAN_": "par1",
+    "_WTN_": "par1",
     "text_null": "",
     "_QA_": "\"",
     "_QC_": "\""
@@ -191,7 +191,7 @@ par1_dipl_syn.json
 par1_dipl_txt.json
 {
   "html_params": {
-    "_MAN_": "par1",
+    "_WTN_": "par1",
     "text_null": "",
     "_QA_": "\"",
     "_QC_": "\""

@@ -5,11 +5,11 @@ from pdb import set_trace
 import argparse
 import os
 from io import StringIO
+import json
 import pprint
 import re
 import sys
 import traceback
-#from lxml import etree
 from teimedlib.htmlbuilder import HtmlBuilder
 from teimedlib.htmloverflow import HtmlOvweflow
 from teimedlib.readhtmlconf import read_csv
@@ -17,17 +17,15 @@ from teimedlib.readjson import read_json
 from teimedlib.uainput import Inp
 from teimedlib.ualog import Log
 from teimedlib import file_utils as fu
-#from teiprjhtmlmake import LOG
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "23-01-2022"
+__date__ = "24-01-2022"
 __version__ = "0.0.5"
 __author__ = "Marta Materni"
 
 DEBUG_HTML = False
 LOG_ERR_WA = 'a'
-
 
 log_conf = Log("w")
 log_info = Log("w")
@@ -38,9 +36,11 @@ log_debug = Log("a")
 
 inp = Inp()
 
+
 def pp(data, w=120):
     s = pprint.pformat(data, indent=2, width=w)
     return s
+
 
 def ppx(xdata, w=120):
     d = {}
@@ -49,6 +49,7 @@ def ppx(xdata, w=120):
             continue
         d[k] = xdata[k]
     return pp(d, w)
+
 
 class Xml2Html:
 
@@ -61,9 +62,9 @@ class Xml2Html:
         log_debug.open("log/DEBUG.log", 1)
 
         self.xml_path = None
-        self.html_path = None
-        self.html_cfg = None
-        self.html_tag_teimcfg = None
+
+        # dict dei tags estratti da csv
+        self.html_tag_dict = None
 
         # diplomatica / interpretatova (d/i)
         self.dipl_inter = None
@@ -74,122 +75,22 @@ class Xml2Html:
 
         # lista x_data (dati xml)
         self.x_data_lst = None
-        
+
         # dizionario di x_data (dati xml) con key csv
         # utilizzato per trovare il parent come indicato in csv
         # TODO controllare se possibili alternative
         self.x_data_dict = None
-        
+
         # stack dei nodi che sono si/no container
         # BUG verificare funzionamento
         self.is_container_stack = [False for i in range(1, 20)]
-        
+
         # tag di controllo per erroi csv _x_ _xy_
         self.csv_tag_ctrl = None
 
         self.w_liv = 0
         # flag per gestione set_trace()
         self.trace = False
-
-    # def node_liv(self, node):
-    #     d = 0
-    #     while node is not None:
-    #         d += 1
-    #         node = node.getparent()
-    #     return d - 1
-
-    # def clean_key(self, k):
-    #     s = k
-    #     p0 = k.find("{http")
-    #     if (p0 > -1):
-    #         p1 = k.rfind('}')
-    #         if p1 > -1:
-    #             s = k[p1+1:]
-    #     return s
-
-    # def node_items(self, nd):
-    #     kvs = nd.items()
-    #     js = {}
-    #     for kv in kvs:
-    #         k = self.clean_key(kv[0])
-    #         v = kv[1]
-    #         js[k] = v
-    #     return js
-
-    # def node_tag(self, nd):
-    #     try:
-    #         tag = nd.tag
-    #         tag = tag if type(nd.tag) is str else "XXX"
-    #         pid = tag.find('}')
-    #         if pid > 0:
-    #             tag = tag[pid + 1:]
-    #         return tag.strip()
-    #     except Exception as e:
-    #         log_err.log(f"ERROR {self.xml_path} node_tag() ")
-    #         log_err.log(e)
-    #         return "XXX"
-
-    # def node_id(self, nd):
-    #     s = ''
-    #     kvs = nd.items()
-    #     for kv in kvs:
-    #         if kv[0].rfind('id') > -1:
-    #             s = kv[1]
-    #             break
-    #     return s
-
-    # def node_id_num(self, id):
-    #     if id == '':
-    #         return ''
-    #     m = re.search(r'\d', id)
-    #     if m is None:
-    #         return -1
-    #     p = m.start()
-    #     return id[p:]
-
-    # def node_text(self, nd):
-    #     text = nd.text
-    #     text = '' if text is None else text.strip()
-    #     text = text.strip().replace(os.linesep, ',,')
-    #     return text
-
-    # def node_tail(self, nd):
-    #     tail = '' if nd.tail is None else nd.tail
-    #     tail = tail.strip().replace(os.linesep, '')
-    #     return tail
-
-    # def node_val(self, nd):
-    #     ls = []
-    #     for x in nd.itertext():
-    #         s = x.strip().replace(os.linesep, '')
-    #         ls.append(s)
-    #     texts = ' '.join(ls)
-    #     s = re.sub(r"\s{2,}", ' ', texts)
-    #     return s
-
-    # def node_is_parent(self, nd):
-    #     cs = nd.getchildren()
-    #     le = len(cs)
-    #     return le > 0
-
-    # def get_node_data(self, nd):
-    #     items = self.node_items(nd)
-    #     id = self.node_id(nd)
-    #     if id != '':
-    #         id_num = self.node_id_num(id)
-    #         items['id_num'] = id_num
-    #     return {
-    #         'id': id,
-    #         'liv': self.node_liv(nd),
-    #         'tag': self.node_tag(nd),
-    #         'text': self.node_text(nd),
-    #         'tail': self.node_tail(nd),
-    #         'items': items,
-    #         # 'keys': self.node_keys(nd),
-    #         'val': self.node_val(nd),
-    #         'is_parent': self.node_is_parent(nd)
-    #     }
-
 
     # html_attrs = self.set_x_items(html_attrs, x_items)
     # c_text = self.set_x_items(c_text, x_items)
@@ -218,7 +119,7 @@ class Xml2Html:
                     pk = k.split('@')
                     tag_p = pk[0]
                     k_p = pk[1]
-                    #UA 
+                    # UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
                     # print("------------------------")
                     # print(self.xml_path)
@@ -246,7 +147,7 @@ class Xml2Html:
             tag_w_last = self.get_tag_w_last()
             log_csv_err.log("last w: ", tag_w_last)
             log_csv_err.log(os.linesep)
-            inp.inp("?", "!")
+            inp.inp("", "!")
         return src
 
     def sett_c_params(self, src, c_params):
@@ -318,7 +219,7 @@ class Xml2Html:
                 if k.find('@') > -1:
                     pk = k.split('@')
                     tag_p = pk[0]
-                    #UA
+                    # UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
 
                     # print("------------------------")
@@ -344,7 +245,7 @@ class Xml2Html:
             tag_w_last = self.get_tag_w_last()
             log_csv_err.log("last w: ", tag_w_last)
             log_csv_err.log(os.linesep)
-            inp.inp("?", "!")
+            inp.inp("", "!")
         return html_attrs
 
     def set_text_in_c_text(self, c_text, x_text):
@@ -366,7 +267,7 @@ class Xml2Html:
                 if k.find('@') > -1:
                     pk = k.split('@')
                     tag_p = pk[0]
-                    #UA
+                    # UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
 
                     # print("------------------------")
@@ -396,7 +297,7 @@ class Xml2Html:
             tag_w_last = self.get_tag_w_last()
             log_csv_err.log("last w: ", tag_w_last)
             log_csv_err.log(os.linesep)
-            inp.inp("?", "!")
+            inp.inp("", "!")
         return c_text, ok
 
     def attrs2html(self, attrs):
@@ -461,9 +362,9 @@ class Xml2Html:
             setta x_data_dict
         """
         xml_tag = x_data['tag']
-        c_data = self.html_tag_teimcfg.get(xml_tag, None)
+        c_data = self.html_tag_dict.get(xml_tag, None)
         if c_data is None:
-            c_data = self.html_tag_teimcfg.get('x', {})
+            c_data = self.html_tag_dict.get('x', {})
             csv_tag = xml_tag
             self.csv_tag_ctrl = f'_x_{csv_tag}'
         else:
@@ -479,9 +380,9 @@ class Xml2Html:
                 lsv = [x_items[k] for k in lsk if k in x_items.keys()]
                 attrs_val = '+'.join(lsv)
                 csv_tag = xml_tag+'+'+attrs_val
-                c_data = self.html_tag_teimcfg.get(csv_tag, None)
+                c_data = self.html_tag_dict.get(csv_tag, None)
                 if c_data is None:
-                    c_data = self.html_tag_teimcfg.get('x+y', None)
+                    c_data = self.html_tag_dict.get('x+y', None)
                     self.csv_tag_ctrl = f'_xy_{csv_tag}'
                 else:
                     self.csv_tag_ctrl = csv_tag
@@ -496,10 +397,10 @@ class Xml2Html:
             log_csv_err.log(f"csv_tag: {csv_tag}")
             log_csv_err.log(f"csv_tag_ctrl: {self.csv_tag_ctrl}")
             log_csv_err.log(ppx(x_data))
-            inp.inp("?", "!")
+            inp.inp("", "!")
             c_data = {}
             # sys.exit(1)
-        #BUG  popola il dict utilizzando csv_tag come chiave
+        # BUG  popola il dict utilizzando csv_tag come chiave
         self.x_data_dict[csv_tag] = x_data
         return c_data
 
@@ -608,7 +509,7 @@ class Xml2Html:
             tag_w_last = self.get_tag_w_last()
             log_csv_err.log("last w: ", tag_w_last)
             log_csv_err.log(os.linesep)
-            inp.inp("?", "!")
+            inp.inp("", "!")
         return html_data
 
     # verifica se . ! ? da seguire con una maiuscola
@@ -644,7 +545,8 @@ class Xml2Html:
                 self.w_liv = 100
         return text, tail
 
-    #def apped_html_data(self, nd):
+
+    # def apped_html_data(self, nd):
     def apped_html_data(self, x_data):
         """
         estrae da nd x_data
@@ -686,7 +588,7 @@ class Xml2Html:
         if self.dipl_inter == 'i':
             h_text = h_text.lower()
             h_tail = h_tail.lower()
-            if self.is_pc_to_up(x_data) :
+            if self.is_pc_to_up(x_data):
                 h_text, h_tail = self.after_pc(x_data, h_data, h_text, h_tail)
 
         # popola self.hb
@@ -694,7 +596,7 @@ class Xml2Html:
             msg = f"ERROR {self.xml_path}  xml_tag:{x_tag}  htlm is null"
             log_err.log(msg)
             log_err.log(pp(x_data))
-            inp.inp("?", "!")
+            inp.inp("", "!")
             return
 
         if x_is_parent:
@@ -718,16 +620,24 @@ class Xml2Html:
 
     def set_html_pramas(self, html):
         """utilizzando il file json formatta i parametri residui
-            es. il nome del manoscrittp _MAN_
+            es. il nome del manoscrittp _WTN_
             qualsiasi altro parametro definito nel file cid configurazione
             al tag html_params
         Args:
             html (str): html
         Returns:
             html (str): html con settati i parametri         """
-        params = self.html_cfg.get("html_params", {})
-        for k, v in params.items():
-            html = html.replace(k, v)
+        # params = self.html_cfg.get("html_params", {})
+        # for k, v in params.items():
+        #     html = html.replace(k, v)
+
+        s = html.replace(os.linesep, "")
+        ptrn = r"_[A-Z]+_"
+        ks = re.findall(ptrn, s)
+        for k in ks:
+            html = html.replace(k, "")
+        html = html.replace("text_null", "")
+        html = re.sub(' +', ' ', html)
         return html
 
     def check_html(self):
@@ -747,13 +657,13 @@ class Xml2Html:
                 log_html_err.log(row.strip())
                 log_html_err.log("---------------------")
                 log_html_err.log(os.linesep)
-                inp.inp('?', '!')
+                inp.inp('', '!')
 
     # TODO solo per i test
-    def default_conf(self, wtn, di):
-        self.html_cfg = {
+    def write_default_conf(self, xml_path, wtn, di):
+        html_cfg = {
             "html_params": {
-                "_MAN_": wtn,
+                "_WTN_": wtn,
                 "text_null": "",
                 "_QA_": "\"",
                 "_QC_": "\""
@@ -761,41 +671,20 @@ class Xml2Html:
             "html_tag_file": "teimcfg/html.csv",
             "html_tag_type": di+":txt",
             "dipl_inter": di,
-            "before_id": 'K'
+            "before_id": "K"
         }
         try:
-            log_conf.log(pp(self.html_cfg).replace("'", '"')).prn(0)
-
-            # hrml dipl./inter
-            self.dipl_inter = self.html_cfg.get("dipl_inter", None)
-            if self.dipl_inter is None or self.dipl_inter not in ['d', 'i']:
-                raise Exception(f"ERROR dipl_inter: {self.dipl_inter}")
-
-            # prefisso di id per diplomatia e interpretativa
-            self.before_id = self.html_cfg.get("before_id", None)
-            if self.before_id is None:
-                raise Exception("ERROR before_id is null.")
-
-            csv_path = self.html_cfg.get("html_tag_file", None)
-            if csv_path is None:
-                raise Exception("ERROR html_tag_file is null.")
-
-            # type : d:txt d:syn i:txt i:syn
-            html_tag_type = self.html_cfg.get("html_tag_type", None)
-            if html_tag_type is None:
-                raise Exception("ERROR html_tag_type is null.")
-
-            self.html_tag_teimcfg = read_csv(csv_path, html_tag_type)
-            log_conf.log(pp(self.html_tag_teimcfg).replace("'", '"')).prn(0)
+            dip_int = "dipl" if di == 'd' else "inter"
+            conf_path = xml_path.replace(".xml", f"_{dip_int}.json")
+            s = json.dumps(html_cfg, indent=2)
+            # open(conf_path, "w").write(s)
+            # fu.chmod(conf_path)
+            fu.write_path_file(conf_path,s)                   
         except Exception as e:
-            log_err.log(f"ERROR {self.xml_paths}  default_conf()")
+            log_err.log(f"ERROR {self.xml_path}  write_default_conf()")
             log_err.log(e)
-            ou = StringIO()
-            traceback.print_exc(file=ou)
-            st = ou.getvalue()
-            ou.close()
-            log_err.log(st)
-            sys.exit(1)
+            return ""
+        return conf_path
 
     def read_conf(self, json_conf_path):
         try:
@@ -820,8 +709,8 @@ class Xml2Html:
             html_tag_type = self.html_cfg.get("html_tag_type", None)
             if html_tag_type is None:
                 raise Exception(f"ERROR html_tag_type is null.")
-            self.html_tag_teimcfg = read_csv(csv_path, html_tag_type)
-            log_conf.log(pp(self.html_tag_teimcfg).replace("'", '"')).prn(0)
+            self.html_tag_dict = read_csv(csv_path, html_tag_type)
+            log_conf.log(pp(self.html_tag_dict).replace("'", '"')).prn(0)
         except Exception as e:
             log_err.log(f"ERROR {self.xml_path}  read_conf())")
             log_err.log(e)
@@ -857,41 +746,28 @@ class Xml2Html:
         try:
             # debug_liv = 2  # TODO
             inp.set_liv(debug_liv)
-
             self.x_data_lst = []
             self.xml_path = xml_path
-            self.html_path = html_path
-            if write_append not in ['w', 'a']:
-                raise Exception(
-                    f"ERROR write/append. {write_append}")
-
-            # lettura file configurazione
-            if len(conf_path) > 1:
+            # lettura / costruzione file configurazione
+            try:
+                if len(wtn) > 0 and len(dipint) > 0:
+                    conf_path = self.write_default_conf(xml_path, wtn, dipint)
+                    # print(conf_path)
                 self.read_conf(conf_path)
-            elif len(wtn) > 0 and len(dipint) > 0:
-                self.default_conf(wtn, dipint)
-            else:
-                raise Exception(f"ERROR write_html() config is null")
+                if conf_path == '':
+                    raise Exception("confg error ")
+            except Exception as e:
+                msg = f"ERROR write_html()\n {e}"
+                raise Exception(msg)
 
             # dict dei dati xml con tag come key
             self.x_data_dict = {}
             # tag per controlo
             self.csv_tag_ctrl = ""
             self.hb.init("")
-
-
-
-            # src = open(self.xml_path, "r").read()
-            # src = src.replace("<TEI>", "")
-            # src = src.replace("</TEI>", "")
-            # src = "<body>"+src+"</body>"
-            # parser = etree.XMLParser(ns_clean=True)
-            # xml_root = etree.XML(src, parser)
-            # for nd in xml_root.iter():
-            #     self.apped_html_data(nd)
-            xnl=XmlNodeList()
+            xnl = XmlNodeList()
             try:
-                self.x_data_lst=xnl.xml_node_data_list(self.xml_path)
+                self.x_data_lst = xnl.xml_node_data_list(self.xml_path)
             except Exception as e:
                 log_err.log(e)
                 sys.exit(1)
@@ -906,7 +782,7 @@ class Xml2Html:
             """
             html_over = HtmlOvweflow(self.x_data_lst,
                                      self.hb.tag_lst,
-                                     self.html_tag_teimcfg)
+                                     self.html_tag_dict)
             html_over.set_overflow()
 
             # cancella o tag XX
@@ -922,11 +798,8 @@ class Xml2Html:
             # setta i parametri _..._ definiti nel file <name>.json
             html = self.set_html_pramas(html)
 
-            fu.make_dir_of_file(self.html_path)
-            with open(self.html_path, write_append) as f:
-                f.write("<!doctype html>"+os.linesep)
-                f.write(html)
-            fu.chmod(self.html_path)
+            s="<!doctype html>"+os.linesep+html
+            fu.write_path_file(html_path,s)
 
         except Exception as e:
             log_err.log(f"ERROR {self.xml_path}  write_html()")
@@ -937,10 +810,34 @@ class Xml2Html:
             ou.close()
             log_err.log(st)
             sys.exit(1)
-        return self.html_path
+        return html_path
 
 
 def do_main(xml, html, conf_path, wtn, dipint, wa='w', deb=False):
+    t0 = conf_path == '' and wtn != '' and dipint != ''
+    t1 = conf_path != '' and wtn == '' and dipint == ''
+    if not(t0 or t1):
+        print(" ")
+        print("args error")
+        print("set -c")
+        print("or")
+        print("set -wt and -di")
+        return
+    if t0 and dipint not in "di":
+        print(" ")
+        print("args error")
+        print("-di d")
+        print("or")
+        print("-di i")
+        return
+    if wa not in "wa":
+        print(" ")
+        print("args error")
+        print("-wa w")
+        print("or")
+        print("-wa a")
+        return
+
     Xml2Html().write_html(xml, html, conf_path, wtn, dipint, wa, deb)
 
 
@@ -966,7 +863,7 @@ if __name__ == "__main__":
                         required=False,
                         default="",
                         metavar="",
-                        help="-c <file_conf.json>")
+                        help="-c <file_conf.json> (alternative to [-wt and -di)]")
 
     parser.add_argument('-wt',
                         dest="wtn",
@@ -974,7 +871,6 @@ if __name__ == "__main__":
                         default="",
                         metavar="",
                         help="-wt <witness>")
-
     parser.add_argument('-di',
                         dest="dipint",
                         required=False,

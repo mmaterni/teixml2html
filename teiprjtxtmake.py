@@ -151,10 +151,10 @@ def do_main_csv(project):
             sp = row.strip().split("|")
             if len(sp) < 2:
                 return
-            work, witness = sp
+            work, witness = sp[:2]
             do_main(work, witness)
     except Exception as e:
-        print("EROROR in <name>_prj.csv")
+        print(f"EROROR in {project}")
         s = str(e)
         print(s)
         sys.exit(1)
@@ -167,6 +167,8 @@ def do_main_args(work, witness):
 
 if __name__ == "__main__":
     le = len(sys.argv)
+    print(sys.argv)
+    print(le)
     if le == 2:
         csv = sys.argv[1]
         do_main_csv(csv)
@@ -175,7 +177,7 @@ if __name__ == "__main__":
         do_main_args(work, witness)
     else:
         print("teiprjtxtmake.py <project.csv>")
-        print("or if exists work")
-        print("teiprjtxtmake.py <work> <witnes>")
-        print(help)
+        print("or if exists project")
+        print("teiprjtxtmake.py <project_name> <witnes_name>")
+        #print(help)
         sys.exit(0)

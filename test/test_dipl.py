@@ -9,7 +9,7 @@ from teixml2html import do_main
 def exec_test(name):
     xml_path = f"xml_test/dip/{name}"
     html_path = xml_path.replace("xml", "html")
-    wtn = "par1"
+    wtn = "WITNESS"
     do_main(xml_path, html_path, "", wtn,"d", "w")
 
 if __name__ == "__main__":

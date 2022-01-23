@@ -2,6 +2,26 @@
 # -*- coding: utf-8 -*-
 import stat
 import os
+import pathlib as pth
+
+# chrea tutte le dir e scrive il file
+def write_path_file(path_str,text):
+    path = pth.Path(path_str)
+    ps=path.parent.parts
+
+    dir_str=ps[0]
+    path_dir = pth.Path(dir_str)
+    path_dir.mkdir(exist_ok=True)
+    chmod(dir_str)
+
+    for p in ps[1:]:
+        dir_str=f"{dir_str}/{p}"
+        path_dir = pth.Path(dir_str)
+        path_dir.mkdir(exist_ok=True)
+        chmod(dir_str)
+
+    open(path_str,"w").write(text)
+    chmod(path_str)
 
 def make_dir_of_file(path):
     dirname=os.path.dirname(path)

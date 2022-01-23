@@ -140,10 +140,6 @@ def cvs2json(csv, html_tag_type):
     return js
 
 
-def csv_join_row(csv):
-    pass
-
-
 # def read_csv(csv_path, html_tag_type):
 #     with open(csv_path, "r+") as f:
 #         csv = f.readlines()
