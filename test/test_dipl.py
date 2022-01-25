@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sys
-from teixml2html import do_main
+import tx2h
 
 
 def exec_test(name):
     xml_path = f"xml_test/dipl/{name}"
     html_path = xml_path.replace("xml", "html")
-    wtn = "WITNESS"
-    do_main(xml_path, html_path, "", wtn, "d", "w")
+    tx2h.do_main(xml_path,
+                 html_path,
+                 "teimcfg/html.csv",
+                 "d",
+                 "witness",
+                 "K",
+                 "w",
+                 1)
 
 
 if __name__ == "__main__":

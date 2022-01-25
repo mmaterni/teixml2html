@@ -545,8 +545,8 @@ class Xml2Html:
                 self.w_liv = 100
         return text, tail
 
-
     # def apped_html_data(self, nd):
+
     def apped_html_data(self, x_data):
         """
         estrae da nd x_data
@@ -659,33 +659,6 @@ class Xml2Html:
                 log_html_err.log(os.linesep)
                 inp.inp('', '!')
 
-    # TODO solo per i test
-    def write_default_conf(self, xml_path, wtn, di):
-        html_cfg = {
-            "html_params": {
-                "_WTN_": wtn,
-                "text_null": "",
-                "_QA_": "\"",
-                "_QC_": "\""
-            },
-            "html_tag_file": "teimcfg/html.csv",
-            "html_tag_type": di+":txt",
-            "dipl_inter": di,
-            "before_id": "K"
-        }
-        try:
-            dip_int = "dipl" if di == 'd' else "inter"
-            conf_path = xml_path.replace(".xml", f"_{dip_int}.json")
-            s = json.dumps(html_cfg, indent=2)
-            # open(conf_path, "w").write(s)
-            # fu.chmod(conf_path)
-            fu.write_path_file(conf_path,s)                   
-        except Exception as e:
-            log_err.log(f"ERROR {self.xml_path}  write_default_conf()")
-            log_err.log(e)
-            return ""
-        return conf_path
-
     def read_conf(self, json_conf_path):
         try:
             self.html_cfg = read_json(json_conf_path)
@@ -725,8 +698,6 @@ class Xml2Html:
                    xml_path,
                    html_path,
                    conf_path,
-                   wtn,
-                   dipint,
                    write_append='w',
                    debug_liv=0):
         """fa il parse del file xml_path scrive i files:
@@ -750,16 +721,10 @@ class Xml2Html:
             self.xml_path = xml_path
             # lettura / costruzione file configurazione
             try:
-                if len(wtn) > 0 and len(dipint) > 0:
-                    conf_path = self.write_default_conf(xml_path, wtn, dipint)
-                    # print(conf_path)
                 self.read_conf(conf_path)
-                if conf_path == '':
-                    raise Exception("confg error ")
             except Exception as e:
                 msg = f"ERROR write_html()\n {e}"
                 raise Exception(msg)
-
             # dict dei dati xml con tag come key
             self.x_data_dict = {}
             # tag per controlo
@@ -798,8 +763,8 @@ class Xml2Html:
             # setta i parametri _..._ definiti nel file <name>.json
             html = self.set_html_pramas(html)
 
-            s="<!doctype html>"+os.linesep+html
-            fu.write_path_file(html_path,s)
+            s = "<!doctype html>"+os.linesep+html
+            fu.write_path_file(html_path, s, write_append)
 
         except Exception as e:
             log_err.log(f"ERROR {self.xml_path}  write_html()")
@@ -813,23 +778,11 @@ class Xml2Html:
         return html_path
 
 
-def do_main(xml, html, conf_path, wtn, dipint, wa='w', deb=False):
-    t0 = conf_path == '' and wtn != '' and dipint != ''
-    t1 = conf_path != '' and wtn == '' and dipint == ''
-    if not(t0 or t1):
-        print(" ")
-        print("args error")
-        print("set -c")
-        print("or")
-        print("set -wt and -di")
-        return
-    if t0 and dipint not in "di":
-        print(" ")
-        print("args error")
-        print("-di d")
-        print("or")
-        print("-di i")
-        return
+def do_main(xml, 
+            html, 
+            conf_path, 
+            wa, 
+            deb):
     if wa not in "wa":
         print(" ")
         print("args error")
@@ -837,8 +790,7 @@ def do_main(xml, html, conf_path, wtn, dipint, wa='w', deb=False):
         print("or")
         print("-wa a")
         return
-
-    Xml2Html().write_html(xml, html, conf_path, wtn, dipint, wa, deb)
+    Xml2Html().write_html(xml, html, conf_path, wa, deb)
 
 
 if __name__ == "__main__":
@@ -850,51 +802,34 @@ if __name__ == "__main__":
     parser.add_argument('-i',
                         dest="xml",
                         required=True,
-                        metavar="",
+                        metavar="file-input",
                         help="-i <file_in.xml>")
     parser.add_argument('-o',
                         dest="html",
                         required=True,
-                        metavar="",
+                        metavar="file-output",
                         help="-o <file_out.html>")
-
     parser.add_argument('-c',
                         dest="confpath",
-                        required=False,
+                        required=True,
                         default="",
-                        metavar="",
-                        help="-c <file_conf.json> (alternative to [-wt and -di)]")
-
-    parser.add_argument('-wt',
-                        dest="wtn",
-                        required=False,
-                        default="",
-                        metavar="",
-                        help="-wt <witness>")
-    parser.add_argument('-di',
-                        dest="dipint",
-                        required=False,
-                        default="",
-                        metavar="",
-                        help="-di d/i (d)iplomat/i)terpret)")
-
+                        metavar="file-input",
+                        help="-c <file_conf.json>")
     parser.add_argument('-wa',
                         dest="wa",
                         required=False,
                         metavar="",
                         default="w",
-                        help="[-wa w/a] (w)rite a)ppend log.err) ")
+                        help="-wa w/a (w)rite a)ppend html default:w)")
     parser.add_argument('-d',
                         dest="deb",
                         required=False,
                         metavar="",
                         default=0,
-                        help="[-d 0/1/2] (debug level)")
+                        help="-d 0/1/2 (debug level default:0)")
     args = parser.parse_args()
     do_main(args.xml,
             args.html,
             args.confpath,
-            args.wtn,
-            args.dipint,
             args.wa,
             args.deb)

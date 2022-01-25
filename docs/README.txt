@@ -6,22 +6,15 @@ parametri:
 
 -i file xml 
 -o file html
+-c file di configurazione json
+-wa a)append w)write modalità di scrittura output 
+    defailt:w
+-d  livelo debug 0/1/2
+    default:0
 
-parametri alternativi
-- c file di configurazione json
-oppure
--w name witnesss
--di d=> diplonatica i=> interpretativa
-
-parametri facoltativi
--wt (default w) modalità di scrittura output 
-    a=> append w=> write
--d  (default 0) livelo debug 0/1/2
-
-----------------------------------
 es. file di configurazione:
-{
 
+{
   "html_params": {
     "_WTN_": "witnedd",
     "text_null": "",
@@ -36,7 +29,7 @@ es. file di configurazione:
 
 _WTN_ : nome del manoscritto
 
-parametri standars per gestione apici e testo nulo
+parametri standards per gestione apici e testo nulo
 
 html_tag_type: path del file dei tag html
 
@@ -44,24 +37,30 @@ dipl_inter: d = diplomatica, i=> interpretativa
 
 before_id: prefisso id
 
-----------------------------------
-lancio con file di configurazione:
+__________________________________________________
 
-teixmltohtml.py -i file.xml -o file.html -c file_config.json [-wa a/w] [-d 1/2/3]
----------------------------------------
-lancio con parametri:
+tx2h.py
+  le stesse funzionalità di teixml2html.py senza usare
+  il file di configurazione.
+    
+parametri:
 
-teixmltohtml.py -i file.xml -o file.html -wt witness - di /d/i  [-wa a/w] [-d 1/2/3]
+-i file xml 
+-o file html
+-t fire htmltag.csv
+    default: teimcfg/html.csv
+-di d)iplomatica i)interpretativa
+    default:d
+-p  prefisso id
+    default K
+-wt name_witnesss
+    default:witness    
+-wa a)append w)write modalità di scrittura output 
+    defailt:w
+-d  livelo debug 0/1/2
+    default:0
 
-Il file di configurazione viene automaticamete creato con
-alcuni valori di default:
+Il file di configurazione file.json viene automaticamete creato.
+Può essere modificto es usato per lanciare
 
-html_tag_file: teimcfg/html.csv
-html_tag_type: d:txt
-dipl_inter: d
-before_id": K
-
-il file json può essere modificto  per un successivo lanco
-
-
-
+teixml3html.py
