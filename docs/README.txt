@@ -1,52 +1,67 @@
 teixml2html.py
-    trasforma file xm in file html utilizzando un fil di
+    trasforma file xm in file html utilizzando un file di
     csv dve sono definiti le entity per l trasformazione
 
-librerie:
-    htmlbuilder.py
-        costruisce nodo per nodo un file HTML
+parametri:
 
-    htmloverflow.py
-         gestisce gli overflow tei DEI FILE XML:
-         discorso diretto, monologo, parole danneggiate
-    
-    readhtmlconf.py
-        legge il file dele enntitiy htmltag.csv e tarsgorma
-        i dati in un dictionary
+-i file xml 
+-o file html
 
-    readjson.py
-        legge i file json e restitusice un dictionary
+parametri alternativi
+- c file di configurazione json
+oppure
+-w name witnesss
+-di d=> diplonatica i=> interpretativa
 
-writehtmlfile.py
-     [-d 0/1/2](setta livello di debug)")
-     [-wa w/a (w)rite a)ppend) default w")
-     -c <file_conf.json")
-     -i <file_in.xml>")
-     -o <file_out.html>")
+parametri facoltativi
+-wt (default w) modalità di scrittura output 
+    a=> append w=> write
+-d  (default 0) livelo debug 0/1/2
 
-    copia un  file template html all'interno di un progetto
-    gestito da prjmgr.py
+----------------------------------
+es. file di configurazione:
+{
 
-writehtml.py
-    copia un template html all'interno di un progetto
-    gestitpo da prjmgr.py
+  "html_params": {
+    "_WTN_": "witnedd",
+    "text_null": "",
+    "_QA_": "\"",
+    "_QC_": "\""
+  },
+  "html_tag_file": "teimcfg/html.csv",
+  "html_tag_type": "d:txt",
+  "dipl_inter": "d",
+  "before_id": "K"
+}
 
-copy2all.py
-  copia i file json di un manoscritto in quelli di n 
-  manoscriiti
+_WTN_ : nome del manoscritto
 
-htmlformat.py
-    formatta i file htmlformat
-    
-prjmgr.py
-    gestisce progetti definiti in file json
+parametri standars per gestione apici e testo nulo
 
-splitteixml.py
-  separa iun file xml di un manoscritto nei file xml dei
-  vari capitoli/eoisodi
+html_tag_type: path del file dei tag html
 
-uainput.py
-    utiliti per il debug di teimed3html
+dipl_inter: d = diplomatica, i=> interpretativa
 
-ualog.py
-    gestione dei log
+before_id: prefisso id
+
+----------------------------------
+lancio con file di configurazione:
+
+teixmltohtml.py -i file.xml -o file.html -c file_config.json [-wa a/w] [-d 1/2/3]
+---------------------------------------
+lancio con parametri:
+
+teixmltohtml.py -i file.xml -o file.html -wt witness - di /d/i  [-wa a/w] [-d 1/2/3]
+
+Il file di configurazione viene automaticamete creato con
+alcuni valori di default:
+
+html_tag_file: teimcfg/html.csv
+html_tag_type: d:txt
+dipl_inter: d
+before_id": K
+
+il file json può essere modificto  per un successivo lanco
+
+
+
