@@ -6,17 +6,16 @@ from setuptools import find_packages
 
 setup(
     name='teixml2html',
-    version="0.2.0",
-    py_modules=['teixml2htmlinfo',
-                 'teixml2html'
-                  ],
+    version="0.0.5",
     packages=find_packages(),
     scripts=[
+        "copyxml.py",
+        "prjmgr.py",
+        "splitteixml.py",
         "teiprjhtmlmake.py",
         "teiprjtxtmake.py",
-        "copyxml.py",
-        "splitteixml.py",
         "teixml2html.py",
+        "tx2h.py",
         "writehtmlfile.py",
         "writehtml.py"
     ],
@@ -37,8 +36,5 @@ setup(
                  'Topic :: Software Development :: Libraries',
                  'Topic :: Utilities'],
     entry_points={
-        'console_scripts': [
-            'teixml2htmlinfo = info:list_modules',
-        ],
     },
 )

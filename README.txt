@@ -1,162 +1,115 @@
-file che NON sono sotto il controllo git
-tutti le indiczioni sono riferite al manoscritto par1
-ma sono da cosiderarsi equivalenti per
-tor,tou,ven sostituendo ila sigla adel manoscritto a par1
+teixml2html.py
+    trasforma file xm in file html utilizzando un file di
+    csv dve sono definiti le entity per l trasformazione
 
-bin
-dir dei comandi di lavoro
+parametri:
 
-html
-html/par1/txt
-html/par1/syn
-......
-output dei file html
+-i file xml 
+-o file html
+-c file di configurazione json
+-wa a)append w)write modalità di scrittura output 
+    defailt:w
+-d  livelo debug 0/1/2
+    default:0
 
-htmlf
-htmlf/par1/txt
-htmlf/par1/syn
-......
-output dei file html formattati per il debug
+es. file di configurazione:
 
-log
-dir dei log
+{
+  "html_params": {
+    "_WTN_": "witnedd",
+    "text_null": "",
+    "_QA_": "\"",
+    "_QC_": "\""
+  },
+  "html_tag_file": "teimcfg/html.csv",
+  "html_tag_type": "d:txt",
+  "dipl_inter": "d",
+  "before_id": "K"
+}
 
-==================================
-Files soot controllo git
+_WTN_ : nome del manoscritto
 
-xml
-xml/floripar1.xml
-......
-files xml dei vari manoscritti
+parametri standards per gestione apici e testo nulo
 
-xml/par1
-......
-dir contenete i files degli episodi
+html_tag_type: path del file dei tag html
 
-cnf
-dir dei files di configurazione
+dipl_inter: d = diplomatica, i=> interpretativa
 
-prj
-dir dei files di prohetto
-=============================
+before_id: prefisso id
 
-file di configurzione:
+__________________________________________________
 
-html.csv
- entity per la produzione di htmlf/par1/
+tx2h.py
+  le stesse funzionalità di teixml2html.py senza usare
+  il file di configurazione.
+    
+parametri:
 
-list_dipl_syn.json
-list_dipl_txt.json
-list_inter_syn.json
-list_inter_txt.json
-    file per la produzione dei pannelli di gestione
+-i file xml 
+-o file html
+-t fire htmltag.csv
+    default: teimcfg/html.csv
+-di d)iplomatica i)interpretativa
+    default:d
+-p  prefisso id
+    default K
+-wt name_witnesss
+    default:witness    
+-wa a)append w)write modalità di scrittura output 
+    defailt:w
+-d  livelo debug 0/1/2
+    default:0
 
-par1_dipl_syn.json
-par1_dipl_txt.json
-par1_inter_syn.json
-par1_inter_txt.json
-    produzione dei files html delle sezioni
-
-tidy.cnf
-    file di configurazione di tidy poer la formattazione dei
-    file htmlf
-================================
-file per esecuzione deile varie fasi
-
-par1_xml.json
-    produce i files xml degli episodi
-    xml/floripar1.xml => xml/par1/epi<num<.xml
-    utilizza:
-        prj/par1_xml.json
-
-par1_txt.json
-    files xml per txt
-    xml/par1/*.xml => html/par1/txt/eps<num>.html
-    utilizza:
-        par1_dipl_txt.json
-        par1_inter_txt.json
-
-par1_txt_pannel.json
-    file per il pannello txt
-    xml/par1/par1_list.xml => html/par1/txt/par1.html
-    utilizza:
-        list_dipl_txt.json
-        list_inter_txt.json
-
-par1_txt_format.json
-    formatta i files html e rova eventuali errir
-    html/par1/txt/eps<num>.html => htmlf/par1/txt/eps<num>_F.html
-
-par1_syn.json
-par1_syn_pannel.json
-par1_syn_format.json
-    sstesse operazioni per par1_syn_format
-
-par1.json
-    esegute tutti i progetti json tranne format
-        par1_xml.json
-        par1_tx.json
-        par1_txt_pannel.json
-        par1_syn.json
-        par1_syn_pannel.json
-
-project.json
-    esegue
-    par1.json
-    tor.json
-    tou.json
-    ven.json
-=============================
-programmi che esguono le trasformazione
-
-prjmgr.py
-    esegue tutte le operazioni del projetto.json
-    es.
-    prjmgr.py prj/project.json
-
-splitteixml.py
-    estraee dla file xml del manoscritto i files xmlm
-    xml/floripar1.xml => xml/par1/eps<num>.xml
+Il file di configurazione file.json viene automaticamete creato.
+Può essere modificto es usato per lanciare
 
 teixml2html.py
-    trasforma xml in html
-    xml/par1/eps<num>.xml => html/par1/txt/eps<num>.html
+
+=====================================================
+librerie ed uitlity per gestione project
+=====================================================
+
+    htmlbuilder.py
+        costruisce nodo per nodo un file HTML
+
+    htmloverflow.py
+         gestisce gli overflow tei DEI FILE XML:
+         discorso diretto, monologo, parole danneggiate
+    
+    readhtmlconf.py
+        legge il file dele enntitiy htmltag.csv e tarsgorma
+        i dati in un dictionary
+
+    readjson.py
+        legge i file json e restitusice un dictionary
 
 writehtmlfile.py
-    lege un file html e lo scrive  all'intyerno dei progetti
+     [-d 0/1/2](setta livello di debug)")
+     [-wa w/a (w)rite a)ppend) default w")
+     -c <file_conf.json")
+     -i <file_in.xml>")
+     -o <file_out.html>")
+
+    copia un  file template html all'interno di un progetto
+    gestito da prjmgr.py
 
 writehtml.py
-    scrive pezzi di html all'inerno di un progetto
+    copia un template html all'interno di un progetto
+    gestitpo da prjmgr.py
 
 htmlformat.py
-    formatta i file html  e gli eventuali errori
-    html/par1/txt/eps<num>.html => htmlf/par1/txt/eps<num>_F.html
+    formatta i file htmlformat
+    
+prjmgr.py
+    gestisce progetti definiti in file json
 
-copyxml.py
-    copya file xml da un projetto xml ad un progetto html
-     es. copyxml.py flori
-        copia i files xml da flori_xml =>  flori_tml   
-
-libreire
-utilizzate da teixml2html.py
-
-csv2json.py
-    trasforma un csv in json
-
-htmlbuilder.py
-    costruisce la struttura htmlf/par1/
-
-htmloverflow.py
-    gestisce overflow (discorso diretto, ..)
-
-readhtmlconf.py
-    legge i file csv
-
-readjson.py
-    legge i file json
+splitteixml.py
+  separa iun file xml di un manoscritto nei file xml dei
+  vari capitoli/eoisodi
 
 uainput.py
-    geisce il debug  mediante  input di controllo
+    utilitwy per il debug di teimed3html
 
 ualog.py
-    gestisce i log di tutte le applicazioni
+    gestione dei log
+
