@@ -1,88 +1,106 @@
+Creazione progetto
+
+
 esempio:
-progettto: flor_html
-witnes: par1
+progettto: prodigi_html
+witnes: padova
+witnes: venezia
 
-N.B.
-nelle applicazioni i fllag
--i indicano file di input
--o file di OUTPUT
--wa output in modalità w/a (write / append)
--c,-t  file di configurazione
+---------------------------------------------------
+Crea la struttura del progetto per padova e venezia
 
-Negli script con argomenti particolarmente lunghi
-o numerosi è possubile andare a cao suandop \
-es.
+teiprjhtmlmake.py  prodigi_html padova
 
-script.py \
--x arg1 \
--y arg2  \
-..
+teiprjhtmlmake.py  prodigi_html venezia
+---------------------------------------------------
+Nella dir 
+prodigi_html/teimcfg
+
+copiare da xteixml2html/teimcfg i files 
+
+html.csv
+teimoverflow.csv
+-------------------------------------------------------
+
+Nelle dir
+
+prodigi_html/xml/firenze
+prodigi_html/xml/padova
+prodigi_html/xml/venezia
+
+copiare i file TEI_XML dela relativa witness
 
 ======================================
-situarsi nella dir flori_html
+Esecuzione del progetto
+
+situarsi nella dir prodigi_html
 lanciare:
 
-pej_mgr.py prj/par1.json
+pej_mgr.py prj/firenze.json
 
-sone esegue le seguenti elaborazioni
+pej_mgr.py prj/padova.json
 
-prjmgr.py prj/par1_xml.json
-prjmgr.py prj/par1_syn.json
-prjmgr.py prj/par1_syn_pannel.json
-prjmgr.py prj/par1_txt.json
-prjmgr.py prj/par1_txt_pannel.jso
+pej_mgr.py prj/venezia.json
+------------------------------------------
+per ogni witness sono eseguite le seguenti operaziopni
+
+prjmgr.py prj/padova_xml.json
+prjmgr.py prj/padova_syn.json
+prjmgr.py prj/padova_syn_pannel.json
+prjmgr.py prj/padova_txt.json
+prjmgr.py prj/padova_txt_pannel.jso
 
 INPUT
-flori_html/xml/par1.xml
+flori_html/xml/padova.xml
 
 OUTPUT
-flori_html/html/par1/txt/par1.html
-flori_html/html/par1/txt/eps01.html
+flori_html/html/padova/txt/padova.html
+flori_html/html/padova/txt/eps01.html
 ..
-flori_html/html/par1/txt/eps0n.html
+flori_html/html/padova/txt/eps0n.html
 
-flori_html/html/par1/syn/par1.html
-flori_html/html/par1/syn/eps01.html
+flori_html/html/padova/syn/padova.html
+flori_html/html/padova/syn/eps01.html
 ..
-flori_html/html/par1/syn/eps0n.html
+flori_html/html/padova/syn/eps0n.html
 
 ================================
 elaborazioni singole
 ================================
-prjmgr.py prj/par1_xml.json
+prjmgr.py prj/padova_xml.json
 esegue:
-splitteixml.py -i xml/par1.xml -o xml/par1/ -m par1
+splitteixml.py -i xml/padova.xml -o xml/padova/ -m padova
 -------------------------------
-prjmgr.py prj/par1_syn.json
+prjmgr.py prj/padova_syn.json
 
 writehtml.py \
--o html/par1/syn/$F.html \
--i '<div id=\par1_dipl_id\ class=\text_pannel tei_dipl\>' \
+-o html/padova/syn/$F.html \
+-i '<div id=\padova_dipl_id\ class=\text_pannel tei_dipl\>' \
 -wa w
 
 teixml2html.py \
--i xml/par1/$F.xml \
--o html/par1/syn/$F.html \
--c prj_teimcfg/par1_dipl_syn.json \
+-i xml/padova/$F.xml \
+-o html/padova/syn/$F.html \
+-c prj_teimcfg/padova_dipl_syn.json \
 -wa a 
 
 writehtml.py \
--o html/par1/syn/$F.html \
--i '</div><div id=\par1_int_id\ class=\text_pannel tei_int\>' \
+-o html/padova/syn/$F.html \
+-i '</div><div id=\padova_int_id\ class=\text_pannel tei_int\>' \
 -wa a
 
 teixml2html.py
--i xml/par1/$F.xml
--o html/par1/syn/$F.html
--c prj_teimcfg/par1_inter_syn.json
+-i xml/padova/$F.xml
+-o html/padova/syn/$F.html
+-c prj_teimcfg/padova_inter_syn.json
 -wa a 
 
 writehtml.py
--o html/par1/syn/$F.html
+-o html/padova/syn/$F.html
 -i '</div>'
 -wa a
 -------------------------------
-prjmgr.py prj/par1_syn_pannel.json
+prjmgr.py prj/padova_syn_pannel.json
  
 writehtml.py
 -o html/tor1/syn/tor1.html
@@ -112,36 +130,36 @@ writehtml.py
 -i '</div>'
 -wa a
 -------------------------------
-prjmgr.py prj/par1_txt.json
+prjmgr.py prj/padova_txt.json
 
 writehtml.py \
--o html/par1/txt/$F.html \
--i '<div id=\par1_dipl_id\ class=\text_pannel tei_dipl\>' \
+-o html/padova/txt/$F.html \
+-i '<div id=\padova_dipl_id\ class=\text_pannel tei_dipl\>' \
 -wa w
 
 teixml2html.py \
--i xml/par1/$F.xml \
--o html/par1/txt/$F.html \
--c prj_teimcfg/par1_dipl_txt.json \
+-i xml/padova/$F.xml \
+-o html/padova/txt/$F.html \
+-c prj_teimcfg/padova_dipl_txt.json \
 -wa a 
 
 writehtml.py \
--o html/par1/txt/$F.html \
--i '</div><div id=\par1_int_id\ class=\text_pannel tei_int\>' \
+-o html/padova/txt/$F.html \
+-i '</div><div id=\padova_int_id\ class=\text_pannel tei_int\>' \
 -wa a
 
 teixml2html.py
--i xml/par1/$F.xml
--o html/par1/txt/$F.html
--c prj_teimcfg/par1_inter_txt.json
+-i xml/padova/$F.xml
+-o html/padova/txt/$F.html
+-c prj_teimcfg/padova_inter_txt.json
 -wa a 
 
 writehtml.py
--o html/par1/txt/$F.html
+-o html/padova/txt/$F.html
 -i '</div>'
 -wa a
 -------------------------------
-prjmgr.py prj/par1_txt_pannel.json
+prjmgr.py prj/padova_txt_pannel.json
  
 writehtml.py
 -o html/tor1/txt/tor1.html
@@ -174,10 +192,10 @@ writehtml.py
 files dei arametri per le singole applicazioni in
 flori_html/prj_teimcfg
 =======================================
-par1_dipl_syn.json
+padova_dipl_syn.json
 {
   "html_params": {
-    "_WTN_": "par1",
+    "_WTN_": "padova",
     "text_null": "",
     "_QA_": "\"",
     "_QC_": "\""
@@ -188,10 +206,10 @@ par1_dipl_syn.json
   "before_id": "d"
 }
 --------------------------------------
-par1_dipl_txt.json
+padova_dipl_txt.json
 {
   "html_params": {
-    "_WTN_": "par1",
+    "_WTN_": "padova",
     "text_null": "",
     "_QA_": "\"",
     "_QC_": "\""
@@ -202,7 +220,7 @@ par1_dipl_txt.json
   "before_id": "d"
 }
 --------------------------------------
-par1_inter_syn.json
+padova_inter_syn.json
 {
   "html_params": {
     "text_null": "",
@@ -215,7 +233,7 @@ par1_inter_syn.json
   "before_id": "i"
 }
 --------------------------------------
-par1_inter_txt.json
+padova_inter_txt.json
 {
   "html_params": {
     "text_null": "",

@@ -63,4 +63,53 @@ parametri:
 Il file di configurazione file.json viene automaticamete creato.
 Può essere modificto es usato per lanciare
 
-teixml3html.py
+teixml2html.py
+
+=====================================================
+librerie ed uitlity per gestione project
+=====================================================
+
+    htmlbuilder.py
+        costruisce nodo per nodo un file HTML
+
+    htmloverflow.py
+         gestisce gli overflow tei DEI FILE XML:
+         discorso diretto, monologo, parole danneggiate
+    
+    readhtmlconf.py
+        legge il file dele enntitiy htmltag.csv e tarsgorma
+        i dati in un dictionary
+
+    readjson.py
+        legge i file json e restitusice un dictionary
+
+writehtmlfile.py
+     [-d 0/1/2](setta livello di debug)")
+     [-wa w/a (w)rite a)ppend) default w")
+     -c <file_conf.json")
+     -i <file_in.xml>")
+     -o <file_out.html>")
+
+    copia un  file template html all'interno di un progetto
+    gestito da prjmgr.py
+
+writehtml.py
+    copia un template html all'interno di un progetto
+    gestitpo da prjmgr.py
+
+htmlformat.py
+    formatta i file htmlformat
+    
+prjmgr.py
+    gestisce progetti definiti in file json
+
+splitteixml.py
+  separa iun file xml di un manoscritto nei file xml dei
+  vari capitoli/eoisodi
+
+uainput.py
+    utilitwy per il debug di teimed3html
+
+ualog.py
+    gestione dei log
+

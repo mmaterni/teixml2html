@@ -160,9 +160,9 @@ def do_main_csv(project):
         sys.exit(1)
 
 def do_main_args(work, witness):
-    if not os.path.isdir(work):
-        print(f"{work} Not Found.")
-        sys.exit(0)
+    # if not os.path.isdir(work):
+    #     print(f"{work} Not Found.")
+    #     sys.exit(0)
     do_main(work, witness)
 
 if __name__ == "__main__":

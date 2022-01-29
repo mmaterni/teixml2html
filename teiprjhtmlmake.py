@@ -64,19 +64,20 @@ class TeiPrjHtmlMake(object):
         self.dir_log = os.path.join(self.dir_work, LOG)
         self.dir_html = os.path.join(self.dir_work, HTML)
         # dir html/witness xml/witness
-        self.dir_html_witness_name = os.path.join(self.dir_html,self.witness_name)
-        self.dir_xml_witness_name = os.path.join(self.dir_xml,self.witness_name)
+        self.dir_html_witness_name = os.path.join(
+            self.dir_html, self.witness_name)
+        self.dir_xml_witness_name = os.path.join(
+            self.dir_xml, self.witness_name)
 
     def write_work_id(self):
-        name_id="__prj__"
-        text=f"{self.work_name}"
-        path_id=os.path.join(self.dir_work,name_id)
+        name_id = "__prj__"
+        text = f"{self.work_name}"
+        path_id = os.path.join(self.dir_work, name_id)
         if os.path.exists(path_id):
             return
-        with open(path_id,"w") as f:
+        with open(path_id, "w") as f:
             f.write(text)
         os.chmod(path_id, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
-
 
     def files_of_dir(self, path, ptrn):
         p = pl.Path(path)
@@ -121,7 +122,6 @@ class TeiPrjHtmlMake(object):
                 f.write(witness_src)
             os.chmod(prj_x, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
 
-
     def print_dir(self):
         print(f">>> {self.witness_name}")
         print(self.dir_work)
@@ -149,45 +149,56 @@ class TeiPrjHtmlMake(object):
         self.copy_prj_cfg_from_witness()
         self.write_work_id()
 
+
 def do_main(work, witness):
     mk = TeiPrjHtmlMake(work, witness)
     mk.make_dirs()
     mk.print_dir()
 
-def do_main_csv(project):
-    try:
-        with open(project, "r") as f:
-            rows = f.readlines()
-        for row in rows:
-            sp = row.strip().split("|")
-            if len(sp) < 2:
-                return
+# def do_main_csv(project):
+#     try:
+#         with open(project, "r") as f:
+#             rows = f.readlines()
+#         for row in rows:
+#             sp = row.strip().split("|")
+#             if len(sp) < 2:
+#                 return
+#             work, witness = sp[0:2]
+#             do_main(work, witness)
+#     except Exception as e:
+#         print("EROROR in <name>_prj.csv")
+#         s = str(e)
+#         print(s)
+#         sys.exit(1)
 
-            work, witness = sp[0:2]
-            do_main(work, witness)
-    except Exception as e:
-        print("EROROR in <name>_prj.csv")
-        s = str(e)
-        print(s)
-        sys.exit(1)
 
 def do_main_args(work, witness):
-    if not os.path.isdir(work):
-        print(f"{work} Not Found.")
-        sys.exit(0)
+    # if not os.path.isdir(work):
+    #     print(f"{work} Not Found.")
+    #     sys.exit(0)
     do_main(work, witness)
+
 
 if __name__ == "__main__":
     le = len(sys.argv)
-    if le == 2:
-        csv = sys.argv[1]
-        do_main_csv(csv)
+    if le != 3:
+        print("")
+        print("teiprjhtmlmake.py <project_name> <witnes_name>")
+        # print(help)
+        sys.exit(0)
     elif le == 3:
         work, witness = sys.argv[1:]
         do_main_args(work, witness)
-    else:
-        print("teiprjhtmlmake.py <project.csv>")
-        print("or if exists project")
-        print("teiprjhtmlmake.py <project_name> <witnes_name>")
-        #print(help)
-        sys.exit(0)
+
+    # if le == 2:
+    #     csv = sys.argv[1]
+    #     do_main_csv(csv)
+    # elif le == 3:
+    #     work, witness = sys.argv[1:]
+    #     do_main_args(work, witness)
+    # else:
+    #     print("teiprjhtmlmake.py <project.csv>")
+    #     print("or if exists project")
+    #     print("teiprjhtmlmake.py <project_name> <witnes_name>")
+    #     #print(help)
+    #     sys.exit(0)
