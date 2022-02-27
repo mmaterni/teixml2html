@@ -6,6 +6,22 @@ import sys
 from pdb import set_trace
 from teimedlib import file_utils as fu
 
+"""
+test di tutti i i tags
+
+pert utti i files in 
+
+xml_test/dipl
+lancia test_dipl.py
+
+xml_test/intre
+lancia  test_inter.py
+
+popola
+html_test/dipl
+html_test/inter
+
+"""
 
 def files_of_dir(path_str, match=None):
     path = pl.Path(path_str)

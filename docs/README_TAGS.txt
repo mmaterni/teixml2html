@@ -38,7 +38,7 @@ par1ams
   par1ametri nella forma key0:val0, key1:val1, ..
   da utilizzare per settare attrs, text di xml
 
-par1ent
+parent
   utilizza il settore xml del pade quando serve ua
   riferimento ad esso nella peoduzione HTML
 

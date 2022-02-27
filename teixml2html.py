@@ -140,7 +140,7 @@ class Xml2Html:
                 v = v.replace('#', '')
                 src = src.replace(f'%{k}%', v)
         except Exception as e:
-            log_csv_err.log(f"ERROR {self.xml_path}  set_text_xitems()")
+            log_csv_err.log(f"ERROR_e {self.xml_path}  set_text_xitems()")
             log_csv_err.log(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("params:", pp(x_items))
@@ -238,7 +238,7 @@ class Xml2Html:
                     x_text = x_data_p['text']
                 html_attrs = html_attrs.replace(f'%{k}%', x_text)
         except Exception as e:
-            log_csv_err.log(f"ERROR {self.xml_path}  set_text_in_html_attr()")
+            log_csv_err.log(f"ERROR_1 {self.xml_path}  set_text_in_html_attr()")
             log_csv_err(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("text_par:", x_text)
@@ -290,7 +290,7 @@ class Xml2Html:
             if t0 != c_text:
                 ok = True
         except Exception as e:
-            log_csv_err.log(f"ERROR {self.xml_path} set_text_in_c_text()")
+            log_csv_err.log(f"ERROR_2 {self.xml_path} set_text_in_c_text()")
             log_csv_err(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("text_par:", x_text)
@@ -392,7 +392,7 @@ class Xml2Html:
                 self.csv_tag_ctrl = csv_tag
         # csv_tag_ctrl = csv_tag se row_data trovato
         if self.csv_tag_ctrl != csv_tag:
-            log_csv_err.log(f"ERROR {self.xml_path}  get_data_row_html_csv()")
+            log_csv_err.log(f"ERROR_3 {self.xml_path}  get_data_row_html_csv()")
             log_csv_err.log(f"xml_tag: {xml_tag}")
             log_csv_err.log(f"csv_tag: {csv_tag}")
             log_csv_err.log(f"csv_tag_ctrl: {self.csv_tag_ctrl}")
@@ -501,7 +501,7 @@ class Xml2Html:
         # csv_ctrl_tag == cvs_tag+"_x_"
         # csv_ctrl_tag == cvs_tag+"_xy_"
         if self.csv_tag_ctrl.find('_x') > -1:
-            log_csv_err.log(f"ERROR  {self.xml_path} build_html_data()")
+            log_csv_err.log(f"ERROR_4  {self.xml_path} build_html_data()")
             log_csv_err.log(f"csv_tag_ctrl:{self.csv_tag_ctrl}")
             log_csv_err.log("x_data:", ppx(x_data))
             log_csv_err.log("h_data:", pp(html_data))
@@ -593,7 +593,7 @@ class Xml2Html:
 
         # popola self.hb
         if h_tag is None:
-            msg = f"ERROR {self.xml_path}  xml_tag:{x_tag}  htlm is null"
+            msg = f"ERROR_5 {self.xml_path}  xml_tag:{x_tag}  htlm is null"
             log_err.log(msg)
             log_err.log(pp(x_data))
             inp.inp("", "!")
@@ -651,7 +651,7 @@ class Xml2Html:
         for i, row in enumerate(lst):
             ms = re.search(ptrn, row)
             if not ms is None:
-                log_html_err.log(f"ERROR {self.xml_path}  check_tml()")
+                log_html_err.log(f"ERROR_6 {self.xml_path}  check_tml()")
                 log_html_err.log(f"parametro: {ms.group()}")
                 log_html_err.log(f"row: {i}")
                 log_html_err.log(row.strip())
@@ -667,25 +667,25 @@ class Xml2Html:
             # hrml dipl./inter
             self.dipl_inter = self.html_cfg.get("dipl_inter", None)
             if self.dipl_inter is None or self.dipl_inter not in ['d', 'i']:
-                raise Exception(f"ERROR dipl_inter: {self.dipl_inter}")
+                raise Exception(f"ERROR_7 dipl_inter: {self.dipl_inter}")
 
             # prefisso di id per diplomatia e interpretativa
             self.before_id = self.html_cfg.get("before_id", None)
             if self.before_id is None:
-                raise Exception(f"ERROR before_id is null.")
+                raise Exception(f"ERROR_8 before_id is null.")
 
             csv_path = self.html_cfg.get("html_tag_file", None)
             if csv_path is None:
-                raise Exception(f"ERROR html_tag_file is null.")
+                raise Exception(f"ERROR_9 html_tag_file is null.")
 
             # type : d:txt d:syn i:txt i:syn
             html_tag_type = self.html_cfg.get("html_tag_type", None)
             if html_tag_type is None:
-                raise Exception(f"ERROR html_tag_type is null.")
+                raise Exception(f"ERROR_a html_tag_type is null.")
             self.html_tag_dict = read_csv(csv_path, html_tag_type)
             log_conf.log(pp(self.html_tag_dict).replace("'", '"')).prn(0)
         except Exception as e:
-            log_err.log(f"ERROR {self.xml_path}  read_conf())")
+            log_err.log(f"ERROR_b {self.xml_path}  read_conf())")
             log_err.log(e)
             ou = StringIO()
             traceback.print_exc(file=ou)
@@ -723,7 +723,7 @@ class Xml2Html:
             try:
                 self.read_conf(conf_path)
             except Exception as e:
-                msg = f"ERROR write_html()\n {e}"
+                msg = f"ERROR_c write_html()\n {e}"
                 raise Exception(msg)
             # dict dei dati xml con tag come key
             self.x_data_dict = {}
@@ -767,7 +767,7 @@ class Xml2Html:
             fu.write_path_file(html_path, s, write_append)
 
         except Exception as e:
-            log_err.log(f"ERROR {self.xml_path}  write_html()")
+            log_err.log(f"ERROR_d {self.xml_path}  write_html()")
             log_err.log(e)
             ou = StringIO()
             traceback.print_exc(file=ou)

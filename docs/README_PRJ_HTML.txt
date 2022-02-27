@@ -1,6 +1,5 @@
 Creazione progetto
 
-
 esempio:
 progettto: prodigi_html
 witnes: padova
@@ -36,11 +35,11 @@ Esecuzione del progetto
 situarsi nella dir prodigi_html
 lanciare:
 
-pej_mgr.py prj/firenze.json
+prjmgr.py prj/firenze.json
 
-pej_mgr.py prj/padova.json
+prjmgr.py prj/padova.json
 
-pej_mgr.py prj/venezia.json
+prjmgr.py prj/venezia.json
 ------------------------------------------
 per ogni witness sono eseguite le seguenti operaziopni
 

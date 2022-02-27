@@ -30,9 +30,8 @@ def set_conf_json(xml_path, tag_path, di, wtn, pid):
         s = json.dumps(html_cfg, indent=2)
         fu.write_path_file(conf_path, s)
     except Exception as e:
-        msg = f"ERROR {self.xml_path}  write_default_conf()"
-        print(msg)
-        sys.exit()
+        msg = f"ERROR {xml_path}  write_default_conf()\n{e}"
+        sys.exit(msg)
     return conf_path
 
 
@@ -65,6 +64,7 @@ if __name__ == "__main__":
                         required=True,
                         metavar="file-output",
                         help="-o <file_out.html>")
+
     parser.add_argument('-t',
                         dest="tag",
                         required=False,

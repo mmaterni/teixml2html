@@ -8,6 +8,9 @@ from teimedlib.xml_node_list import XmlNodeList
 from teimedlib import file_utils as fu
 from lxml import etree
 
+"""
+popola xml_test
+"""
 
 def pp(data, w=120):
     s = pprint.pformat(data, indent=2, width=w)
@@ -61,7 +64,7 @@ class SplitXml:
                 xml_lst.append(xml)
         return xml_lst
 
-    def find_xml_tag(self, tag):
+    def find_tag_in_xml_list(self, tag):
         xml = ''
         for x in self.xml_lst:
             if x.find(f"<{tag}") > -1:
@@ -69,7 +72,7 @@ class SplitXml:
                 break
         return xml
 
-    def find_xml_attr(self, tag_attr):
+    def find_attr_in_xml_list(self, tag_attr):
         sp = tag_attr.split('+')
         tag = sp[0]
         attr = sp[1:]
@@ -103,40 +106,51 @@ class SplitXml:
             s=f"<div>\n{x}</div>"
             return s
 
+        # tag senza +
         for tag in tag_lst:
             p = tag.find('+')
             if p > -1:
                 continue
-            xml = self.find_xml_tag(tag)
+
+            # trova il segmento xml che contiee il tag
+            xml = self.find_tag_in_xml_list(tag)
             if xml != '':
+                # trovaro
                 pth = F"xml_test/{d_i}/{tag}.xml"
                 s=xml_div(xml)
                 fu.write_path_file(pth,s)
             else:
+                # non esiste un segmento xm che contenga il tag
                 pth = F"xml_test/{d_i}_null/{tag}.xml"
                 fu.write_path_file(pth,"null")
 
+        # tag con +
         for tag in tag_lst:
             p = tag.find('+')
             if p < 0:
                 continue
-            xml = self.find_xml_attr(tag)
+            xml = self.find_attr_in_xml_list(tag)
             tag_attr = tag.replace('+', '_')
             if xml != '':
+                #trovato
                 pth = F"xml_test/{d_i}/{tag_attr}.xml"
                 s=xml_div(xml)
                 fu.write_path_file(pth,s)
             else:
+                #non trovato
                 pth = F"xml_test/{d_i}_null/{tag_attr}.xml"
                 fu.write_path_file(pth,"null")
 
     def split_xml(self, xml_path):
+        # per ogni nodo costruisce un segmento completo xml
         nd_lst = self.xnl.xml_node_list(xml_path)
         self.xml_lst = self.xml_list(nd_lst)
         # lettura tagd csv
         tag_path = "teimcfg/html.csv"
         tag_dip_lst = self.read_csv(tag_path, "d")
         tag_int_lst = self.read_csv(tag_path, "i")
+        # per ogni tag trova il segmento xml 
+        # che lo contiene e lo scrive
         self.write_xml_for_tag(tag_dip_lst,"dipl")
         self.write_xml_for_tag(tag_int_lst, "inter")
 
@@ -150,7 +164,7 @@ if __name__ == "__main__":
     le=len(sys.argv)
     if le==1:
         print("")
-        print("split_xml_for_csv_atg.py  <file_name.xml>")
+        print("split_xml_for_csv_tags.py  <file_name.xml>")
         sys.exit()
     xp = sys.argv[1]
     #xp = "xml/floripar.xml"
