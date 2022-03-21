@@ -6,7 +6,8 @@ import pathlib as pth
 
 def chmod(path):
     os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
-
+ 
+ 
 # crea tutte le dir e scrive il file
 def write_path_file(path_str, text, w_a='w'):
     path = pth.Path(path_str)
