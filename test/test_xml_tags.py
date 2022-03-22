@@ -4,7 +4,7 @@ import pathlib as pl
 import tx2h
 import sys
 from pdb import set_trace
-from teimedlib import file_utils as fu
+from . import _file_utils as fu
 
 """
 test di tutti i i tags

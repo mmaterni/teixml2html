@@ -6,6 +6,7 @@ import sys
 from teimedlib.ualog import Log
 import traceback
 TAG_COL_NUM = 12
+XML_TAG_INTEST="xml_tag"
 
 logerr = Log("w")
 logerr.open("log/readhtmlconf.ERR.log", 1)
@@ -22,6 +23,14 @@ def t_split(s):
     return s0, s1
 
     """
+    d : diplomatica         text + syn
+    i : interpretativa      text + syn
+    xt: dipp + inter        text
+    xs: dipp + inter               syn
+    dt: dip                 text 
+    ds: dip                        syn
+    it:         inter       text
+    d:          inter              syn
         d   i   xt  xs  dt  ds  it  is
     x   1   1   1   1   1   1   1   1
     
@@ -53,7 +62,6 @@ def row_ok(t, e):
             return True
     return False
 
-
 # x|xml_tag|tag|keys|attrs|text|params|parent!tags|before|after
 def cvs2json(csv, html_tag_type):
     lsb = ["", "", "", "", "", "", "", ""]
@@ -71,14 +79,16 @@ def cvs2json(csv, html_tag_type):
             x = flds[0]
             if row_ok(x,html_tag_type) is False:
                 continue
-            
+
             flds = flds[1:]
             xml_tag = flds[0]
             # salta righe di intestazione
-            if xml_tag == 'xml_tag':
-                continue
+            if xml_tag == XML_TAG_INTEST:
+               continue
 
             flds = [x.strip() for x in flds]
+            #   0     1   2     3    4     5        6         7     8
+            #xml_tag|tag|keys|attrs|text|params|parent!tags|before|after
 
             # tag
             tag = flds[1]
@@ -97,7 +107,7 @@ def cvs2json(csv, html_tag_type):
                     kv = x.split(':')
                     if len(kv) !=2 :
                         logerr.log("tags_cvs2json() 1")
-                        logerr.log(f'csv in column attrs; field:{f}{os.linesep}')
+                        logerr.log(f'csv in column attrs; field:{f}\n')
                         logerr.log(row)
                         sys.exit()
                     k=kv[0]
@@ -117,7 +127,7 @@ def cvs2json(csv, html_tag_type):
                     kv = x.split(':')
                     if len(kv) !=2 :
                         logerr.log("tags_cvs2json() 2")
-                        logerr.log(f'ERROR csv in column params; field:{f}{os.linesep}')
+                        logerr.log(f'ERROR csv in column params; field:{f}\n')
                         logerr.log(row)
                         sys.exit()
                     k=kv[0]

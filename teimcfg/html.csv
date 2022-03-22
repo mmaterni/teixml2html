@@ -8,11 +8,12 @@ x|tei|XXX|
 x|body|XXX|
 x|back|XXX|
 
+x|head|div|id,n||
+x|seg|div|id,n||
+x|s|div|id,n||
 
 x|p|div|id,n||
 x|lb|div|id,n||
-x|maritozza|span
-
 
 x|div|div|type,ref|class:div_text|text_null
 x|pb|div|id,n|class:pb
@@ -38,10 +39,15 @@ i|pc+#1hd-r|span|id|class:pc_1hd_r%%text%%_int|%text%|.:_upc,!:_upc,?:_upc
 i|pc+#2hd|span|id|class:pc_2hd%%text%%_int|%text%|.:_upc,!:_upc,?:_upc
 
 x|hi|hi+rend
+
+#xml_tag|AAA definire tag per d e i
+x|hi+init-sec|span||class:hi_sec
+
 d|hi+init-flour|span||class:hi_flour
 d|hi+init-ill|span||class:hi_ill
 d|hi+init-high|span||class:hi_high
 d|hi+maj-dipl|span||class:hi
+
 i|hi+init-flour|span||class:hi_flour_int
 i|hi+init-ill|span||class:hi_ill_int
 i|hi+init-high|span||class:hi_high_int

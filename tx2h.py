@@ -2,13 +2,25 @@
 # -*- coding: utf-8 -*-
 import sys
 import argparse
-from teimedlib import file_utils as fu
+import teimedlib.pathutils as ptu
 from teixml2html import Xml2Html
 import json
 from pdb import set_trace
-__date__ = "24-01-2022"
-__version__ = "0.0.1"
+
+__date__ = "22-03-2022"
+__version__ = "0.0.3"
 __author__ = "Marta Materni"
+
+"""
+scrive un file <path_file>.json utilizzando anche valori di defuault
+dei parametri.
+lancia 
+teixml2html.py
+utilizzando il file json crato
+il file può essere utilizzato per lanciare
+teizml2html.py
+
+"""
 
 
 def set_conf_json(xml_path, tag_path, di, wtn, pid):
@@ -28,7 +40,11 @@ def set_conf_json(xml_path, tag_path, di, wtn, pid):
         dip_int = "dipl" if di == 'd' else "inter"
         conf_path = xml_path.replace(".xml", f"_{dip_int}.json")
         s = json.dumps(html_cfg, indent=2)
-        fu.write_path_file(conf_path, s)
+        # AAA fu.write_path_file(conf_path, s)
+        ptu.make_dir_of_file(conf_path)
+        with open(conf_path, "w") as f:
+            f.write(s)
+
     except Exception as e:
         msg = f"ERROR {xml_path}  write_default_conf()\n{e}"
         sys.exit(msg)
@@ -43,9 +59,9 @@ def do_main(xml,
             pid,
             wa,
             deb):
-    #set_trace()
-    conf_path = set_conf_json(xml, tag, di, wtn, pid)
-    Xml2Html().write_html(xml, html, conf_path, wa, deb)
+    # set_trace()
+    json_path = set_conf_json(xml, tag, di, wtn, pid)
+    Xml2Html().write_html(xml, html, json_path, wa, deb)
 
 
 if __name__ == "__main__":
@@ -69,7 +85,7 @@ if __name__ == "__main__":
                         dest="tag",
                         required=False,
                         default="teimcfg/html.csv",
-                        metavar="file-input",
+                        metavar="file tag.csv",
                         help="-t <tag_file.csv> (default:teimcfg/html.csv)")
     parser.add_argument('-di',
                         dest="di",

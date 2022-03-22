@@ -5,8 +5,11 @@ import sys
 import os
 import pprint
 from teimedlib.xml_node_list import XmlNodeList
-from teimedlib import file_utils as fu
+import teimedlib.pathutils as ptu
 from lxml import etree
+
+#__date__ = "22-03-2022"
+#__version__ = "0.0.7"
 
 """
 popola xml_test
@@ -118,11 +121,17 @@ class SplitXml:
                 # trovaro
                 pth = F"xml_test/{d_i}/{tag}.xml"
                 s=xml_div(xml)
-                fu.write_path_file(pth,s)
+                #AAA fu.write_path_file(pth,s)
+                ptu.make_dir_of_file(pth)
+                with open(pth,"w") as f:
+                    f.write(s)
             else:
                 # non esiste un segmento xm che contenga il tag
                 pth = F"xml_test/{d_i}_null/{tag}.xml"
-                fu.write_path_file(pth,"null")
+                #AAA fu.write_path_file(pth,"null")
+                ptu.make_dir_of_file(pth)
+                with open(pth,"w") as f:
+                    f.write("null")
 
         # tag con +
         for tag in tag_lst:
@@ -135,11 +144,17 @@ class SplitXml:
                 #trovato
                 pth = F"xml_test/{d_i}/{tag_attr}.xml"
                 s=xml_div(xml)
-                fu.write_path_file(pth,s)
+                #AAA fu.write_path_file(pth,s)
+                ptu.make_dir_of_file(pth)
+                with open(pth,"w") as f:
+                    f.write(s)
             else:
                 #non trovato
                 pth = F"xml_test/{d_i}_null/{tag_attr}.xml"
-                fu.write_path_file(pth,"null")
+                #AAA fu.write_path_file(pth,"null")
+                ptu.make_dir_of_file(pth)
+                with open(pth,"w") as f:
+                    f.write(s)
 
     def split_xml(self, xml_path):
         # per ogni nodo costruisce un segmento completo xml

@@ -5,7 +5,7 @@ from pdb import set_trace
 import argparse
 import os
 from io import StringIO
-import json
+# import json
 import pprint
 import re
 import sys
@@ -16,23 +16,27 @@ from teimedlib.readhtmlconf import read_csv
 from teimedlib.readjson import read_json
 from teimedlib.uainput import Inp
 from teimedlib.ualog import Log
-from teimedlib import file_utils as fu
+import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "24-01-2022"
-__version__ = "0.0.5"
+__date__ = "22-03-2022"
+__version__ = "0.0.7"
 __author__ = "Marta Materni"
 
+# AAA costanti da implementare
+TEXT_NUKK = "text_null"
+
+
 DEBUG_HTML = False
-LOG_ERR_WA = 'a'
+LOG_ERR_WA = 'w'  # AAA
 
 log_conf = Log("w")
 log_info = Log("w")
 log_err = Log(LOG_ERR_WA)
 log_csv_err = Log(LOG_ERR_WA)
 log_html_err = Log(LOG_ERR_WA)
-log_debug = Log("a")
+# log_debug = Log("a")
 
 inp = Inp()
 
@@ -59,7 +63,7 @@ class Xml2Html:
         log_err.open("log/teixml2html.ERR.log", 1)
         log_csv_err.open("log/teixml2html.csv.ERR.log", 1)
         log_html_err.open("log/teixml2html.html.ERR.log", 1)
-        log_debug.open("log/DEBUG.log", 1)
+        # log_debug.open("log/DEBUG.log", 1)
 
         self.xml_path = None
 
@@ -97,7 +101,7 @@ class Xml2Html:
     def set_x_items(self, src, x_items):
         """setta un testo parametrizzato con x_items:
         i parametri del testo sono nella forma
-        %param% nel cso di parametr %tag_paren@ù+param% 
+        %param% nel cso di parametr %tag_paren@ù+param%
         tag_parent estrae da x_data_dict x_data
         memorizzato con il tag pag_arente e pren x_items
         NB.
@@ -140,7 +144,7 @@ class Xml2Html:
                 v = v.replace('#', '')
                 src = src.replace(f'%{k}%', v)
         except Exception as e:
-            log_csv_err.log(f"ERROR_e {self.xml_path}  set_text_xitems()")
+            log_csv_err.log(f"ERROR_0 set_text_xitems()")
             log_csv_err.log(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("params:", pp(x_items))
@@ -238,7 +242,7 @@ class Xml2Html:
                     x_text = x_data_p['text']
                 html_attrs = html_attrs.replace(f'%{k}%', x_text)
         except Exception as e:
-            log_csv_err.log(f"ERROR_1 {self.xml_path}  set_text_in_html_attr()")
+            log_csv_err.log(f"ERROR_1  set_text_in_html_attr()")
             log_csv_err(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("text_par:", x_text)
@@ -290,7 +294,7 @@ class Xml2Html:
             if t0 != c_text:
                 ok = True
         except Exception as e:
-            log_csv_err.log(f"ERROR_2 {self.xml_path} set_text_in_c_text()")
+            log_csv_err.log(f"ERROR_2  set_text_in_c_text()")
             log_csv_err(e)
             log_csv_err.log("text: {text}")
             log_csv_err.log("text_par:", x_text)
@@ -346,9 +350,11 @@ class Xml2Html:
 
     def get_data_row_html_csv(self, x_data):
         """ ritorna dati della row di <tag>.csv individuata
-            dall tag o tag+attr di x_data del in xml_data_dict
+            dall tag o tag+attr di x_data dwfinita in xml_data_dict
             la key è quella ottenuta dal tag xml
             e l'eventuale/i attributo
+
+            x|xml_tag|tag|keys|attrs|text|params|parent
 
             se per xml_tag row_data is None
               csv_tag_ctrl="_x_"+csv_tag
@@ -364,23 +370,45 @@ class Xml2Html:
         xml_tag = x_data['tag']
         c_data = self.html_tag_dict.get(xml_tag, None)
         if c_data is None:
+            # tag non trovata
             c_data = self.html_tag_dict.get('x', {})
             csv_tag = xml_tag
             self.csv_tag_ctrl = f'_x_{csv_tag}'
         else:
+            # tag trovata
             tag = c_data.get('tag', f"_x_{xml_tag}")
             p = tag.find('+')
             if p > -1:
-                # tag + attrs
+                # tag composto
+                # xml_tag   : rend="transf"
+                # csv_tag   : d|del|del+rend+hand (tag iniziale)
+                # x_items   : {rend:"trans"}
+                # lsk       : ['rend','hand]
+                # lsv       : ['trans']
+                # attrs_val : trans
+                # csv_tag   : del+trans (tag effettivo)
                 x_items = x_data['items']
-                # tag|tag + att1_name + attr2_name+..
-                # x_items[attr<n>_name]  => [attr1_val,attr2_val]
-                # tag + attr1_val + att2_val + ..
                 lsk = tag.split('+')[1:]
                 lsv = [x_items[k] for k in lsk if k in x_items.keys()]
                 attrs_val = '+'.join(lsv)
                 csv_tag = xml_tag+'+'+attrs_val
                 c_data = self.html_tag_dict.get(csv_tag, None)
+                # #if csv_tag.find('add+') > -1:
+                #     self.trace = True
+                # if self.trace:
+                #     print("-------------")
+                #     print("xml_tag  : "+xml_tag)
+                #     print("tag      : "+tag)
+                #     print("x_items  : "+pp(x_items, 20))
+                #     print("lsk      : "+pp(lsk))
+                #     print("lsv      : "+pp(lsv))
+                #     print("attrs_val: "+attrs_val)
+                #     print("csv_tag  : "+csv_tag)
+                #     print("c_data   : "+pp(c_data, 20))
+                #     print("-------------")
+                #     self.trace=False
+                #     #set_trace()
+                #     input()
                 if c_data is None:
                     c_data = self.html_tag_dict.get('x+y', None)
                     self.csv_tag_ctrl = f'_xy_{csv_tag}'
@@ -390,13 +418,15 @@ class Xml2Html:
                 # tag semplice
                 csv_tag = xml_tag
                 self.csv_tag_ctrl = csv_tag
+
         # csv_tag_ctrl = csv_tag se row_data trovato
         if self.csv_tag_ctrl != csv_tag:
-            log_csv_err.log(f"ERROR_3 {self.xml_path}  get_data_row_html_csv()")
-            log_csv_err.log(f"xml_tag: {xml_tag}")
-            log_csv_err.log(f"csv_tag: {csv_tag}")
+            log_csv_err.log(f"ERROR_3  get_data_row_html_csv()")
             log_csv_err.log(f"csv_tag_ctrl: {self.csv_tag_ctrl}")
-            log_csv_err.log(ppx(x_data))
+            log_csv_err.log(f"xml_tag     : {xml_tag}")
+            log_csv_err.log(f"csv_tag     : {csv_tag}")
+            log_csv_err.log(f"x_data:\n{ppx(x_data,)}")
+            log_csv_err.log(f"c_data:\n{ppx(c_data)}")
             inp.inp("", "!")
             c_data = {}
             # sys.exit(1)
@@ -497,15 +527,15 @@ class Xml2Html:
         log_info.log(html_attrs).prn(0)
         log_info.log(">> html_data").prn(0)
         log_info.log(pp(html_data)).prn(0)
-        # ERRORi nella gestione del files csv dei tag html
+        # errore nella gestione del files csv dei tag html
         # csv_ctrl_tag == cvs_tag+"_x_"
         # csv_ctrl_tag == cvs_tag+"_xy_"
         if self.csv_tag_ctrl.find('_x') > -1:
-            log_csv_err.log(f"ERROR_4  {self.xml_path} build_html_data()")
+            log_csv_err.log(f"ERROR_4  build_html_data()")
             log_csv_err.log(f"csv_tag_ctrl:{self.csv_tag_ctrl}")
-            log_csv_err.log("x_data:", ppx(x_data))
-            log_csv_err.log("h_data:", pp(html_data))
-            # ultimo tag w prima dell'ERRORe
+            log_csv_err.log("x_data        :", ppx(x_data))
+            log_csv_err.log("html_data     :", pp(html_data))
+            # ultimo tag w prima dell'errore
             tag_w_last = self.get_tag_w_last()
             log_csv_err.log("last w: ", tag_w_last)
             log_csv_err.log(os.linesep)
@@ -557,7 +587,7 @@ class Xml2Html:
         Args:
             nd (xml.node): nodo xml
         """
-        #x_data = self.get_node_data(nd)
+        # x_data = self.get_node_data(nd)
         # self.x_data_lst.append(x_data)
 
         x_liv = x_data['liv']
@@ -593,7 +623,7 @@ class Xml2Html:
 
         # popola self.hb
         if h_tag is None:
-            msg = f"ERROR_5 {self.xml_path}  xml_tag:{x_tag}  htlm is null"
+            msg = f"ERROR_5  xml_tag:{x_tag} htlm is null"
             log_err.log(msg)
             log_err.log(pp(x_data))
             inp.inp("", "!")
@@ -621,8 +651,8 @@ class Xml2Html:
     def set_html_pramas(self, html):
         """utilizzando il file json formatta i parametri residui
             es. il nome del manoscrittp _WTN_
-            qualsiasi altro parametro definito nel file cid configurazione
-            al tag html_params
+            qualsiasi altro parametro definito nel file cid 
+            configurazione  al tag html_params
         Args:
             html (str): html
         Returns:
@@ -647,11 +677,11 @@ class Xml2Html:
         """
         ptrn = r"%[\w/,;:.?!^-]+%"
         lst = self.hb.tag_lst
-        #le = len(lst)
+        # le = len(lst)
         for i, row in enumerate(lst):
             ms = re.search(ptrn, row)
             if not ms is None:
-                log_html_err.log(f"ERROR_6 {self.xml_path}  check_tml()")
+                log_html_err.log(f"ERROR_6 check_tml()")
                 log_html_err.log(f"parametro: {ms.group()}")
                 log_html_err.log(f"row: {i}")
                 log_html_err.log(row.strip())
@@ -681,11 +711,11 @@ class Xml2Html:
             # type : d:txt d:syn i:txt i:syn
             html_tag_type = self.html_cfg.get("html_tag_type", None)
             if html_tag_type is None:
-                raise Exception(f"ERROR_a html_tag_type is null.")
+                raise Exception(f"ERROR_A html_tag_type is null.")
             self.html_tag_dict = read_csv(csv_path, html_tag_type)
             log_conf.log(pp(self.html_tag_dict).replace("'", '"')).prn(0)
         except Exception as e:
-            log_err.log(f"ERROR_b {self.xml_path}  read_conf())")
+            log_err.log(f"ERROR_B read_conf())")
             log_err.log(e)
             ou = StringIO()
             traceback.print_exc(file=ou)
@@ -723,7 +753,7 @@ class Xml2Html:
             try:
                 self.read_conf(conf_path)
             except Exception as e:
-                msg = f"ERROR_c write_html()\n {e}"
+                msg = f"ERROR_C write_html()\n {e}"
                 raise Exception(msg)
             # dict dei dati xml con tag come key
             self.x_data_dict = {}
@@ -764,10 +794,14 @@ class Xml2Html:
             html = self.set_html_pramas(html)
 
             s = "<!doctype html>"+os.linesep+html
-            fu.write_path_file(html_path, s, write_append)
+            # BUG write_path_file da modificare
+            #AAA fu.write_path_file(html_path, s, write_append)
+            ptu.make_dir_of_file(html_path)
+            with open(html_path,write_append) as f:
+                f.write(s)
 
         except Exception as e:
-            log_err.log(f"ERROR_d {self.xml_path}  write_html()")
+            log_err.log(f"ERROR_D  write_html()")
             log_err.log(e)
             ou = StringIO()
             traceback.print_exc(file=ou)
@@ -778,10 +812,10 @@ class Xml2Html:
         return html_path
 
 
-def do_main(xml, 
-            html, 
-            conf_path, 
-            wa, 
+def do_main(xml,
+            html,
+            conf_path,
+            wa,
             deb):
     if wa not in "wa":
         print(" ")

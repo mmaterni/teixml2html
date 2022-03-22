@@ -5,10 +5,10 @@ import sys
 import argparse
 import os
 from teimedlib.ualog import Log
-import teimedlib.file_utils as fut
+import teimedlib.pathutils as ptu
 
-__date__ = "'4-01-2021"
-__version__ = "0.1.0"
+__date__ = "'22-03-2021"
+__version__ = "0.1.1"
 __author__ = "Marta Materni"
 
 logerr = Log("a")
@@ -41,7 +41,7 @@ if __name__ == "__main__":
                             help="[-wa w/a (w)rite a)ppend) default a")
         args = parser.parse_args()
         html_ou = args.ou 
-        fut.make_dir_of_file(html_ou)
+        ptu.make_dir_of_file(html_ou)
         html = args.html
         write_append = args.wa
         with open(html_ou, write_append) as f:
