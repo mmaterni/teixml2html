@@ -21,13 +21,10 @@ from teimedlib.xml_node_list import XmlNodeList
 
 
 __date__ = "22-03-2022"
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 __author__ = "Marta Materni"
 
-# AAA costanti da implementare
 TEXT_NUKK = "text_null"
-
-
 DEBUG_HTML = False
 LOG_ERR_WA = 'w'  # AAA
 
@@ -56,7 +53,7 @@ def ppx(xdata, w=120):
 
 
 class Xml2Html:
-
+    
     def __init__(self):
         log_info.open("log/teixml2html.log", 0)
         log_conf.open("log/teimcfg.json", 0)
@@ -82,7 +79,6 @@ class Xml2Html:
 
         # dizionario di x_data (dati xml) con key csv
         # utilizzato per trovare il parent come indicato in csv
-        # TODO controllare se possibili alternative
         self.x_data_dict = None
 
         # stack dei nodi che sono si/no container
@@ -123,7 +119,6 @@ class Xml2Html:
                     pk = k.split('@')
                     tag_p = pk[0]
                     k_p = pk[1]
-                    # UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
                     # print("------------------------")
                     # print(self.xml_path)
@@ -223,9 +218,7 @@ class Xml2Html:
                 if k.find('@') > -1:
                     pk = k.split('@')
                     tag_p = pk[0]
-                    # UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
-
                     # print("------------------------")
                     # print(self.xml_path)
                     # print(html_attrs)
@@ -235,7 +228,6 @@ class Xml2Html:
                     # print(tag_p)
                     # print(pp(x_data_p))
                     # input("?")
-
                     if x_data_p is None:
                         raise Exception(
                             f"tag parent:{tag_p} not found.")
@@ -271,9 +263,7 @@ class Xml2Html:
                 if k.find('@') > -1:
                     pk = k.split('@')
                     tag_p = pk[0]
-                    # UA
                     x_data_p = self.x_data_dict.get(tag_p, None)
-
                     # print("------------------------")
                     # print(self.xml_path)
                     # print(c_text)
@@ -283,13 +273,11 @@ class Xml2Html:
                     # print(tag_p)
                     # print(pp(x_data_p))
                     # input("?")
-
                     if x_data_p is None:
                         raise Exception(
                             f"tag parent: {tag_p} not found.")
                     x_text = x_data_p['text']
                     ok = True
-
                 c_text = c_text.replace(f'%{k}%', x_text)
             if t0 != c_text:
                 ok = True
@@ -430,7 +418,7 @@ class Xml2Html:
             inp.inp("", "!")
             c_data = {}
             # sys.exit(1)
-        # BUG  popola il dict utilizzando csv_tag come chiave
+        # popola il dict utilizzando csv_tag come chiave
         self.x_data_dict[csv_tag] = x_data
         return c_data
 
@@ -464,7 +452,7 @@ class Xml2Html:
         x_tail = x_data['tail']
         x_liv = x_data['liv']
 
-        # TODO verificare quando è settato container
+        # FIXME verificare quando è settato container
         self.is_container_stack[x_liv] = False
 
         c_data = self. get_data_row_html_csv(x_data)
@@ -575,9 +563,7 @@ class Xml2Html:
                 self.w_liv = 100
         return text, tail
 
-    # def apped_html_data(self, nd):
-
-    def apped_html_data(self, x_data):
+    def apped_html_data(self,row_num, x_data):
         """
         estrae da nd x_data
         invoca remove_params_null()
@@ -587,13 +573,11 @@ class Xml2Html:
         Args:
             nd (xml.node): nodo xml
         """
-        # x_data = self.get_node_data(nd)
-        # self.x_data_lst.append(x_data)
-
+        if row_num % 1000 == 0:
+            print(row_num)
         x_liv = x_data['liv']
         x_is_parent = x_data['is_parent']
         x_tag = x_data['tag']
-
         # setta dati per tag html
         h_data = self.build_html_data(x_data)
         h_tag = h_data['tag']
@@ -604,7 +588,7 @@ class Xml2Html:
         # FIXME se il precedente è un parent contenitor
         prev_is_container = self.is_container_stack[x_liv-1]
         if prev_is_container:
-            set_trace()
+            set_trace()  # BUG AAA
             # rimpiazza text nel tag precdente (il container)
             content = f'<{h_tag} {h_attrs}>{h_text}</{h_tag}>{h_tail}'
             s = self.hb.node_last()
@@ -745,7 +729,7 @@ class Xml2Html:
             html_path (str): filr name html 
         """
         try:
-            # debug_liv = 2  # TODO
+            # debug_liv = 2  
             inp.set_liv(debug_liv)
             self.x_data_lst = []
             self.xml_path = xml_path
@@ -766,8 +750,9 @@ class Xml2Html:
             except Exception as e:
                 log_err.log(e)
                 sys.exit(1)
-            for xd in self.x_data_lst:
-                self.apped_html_data(xd)
+
+            for i,xd in enumerate(self.x_data_lst):
+                self.apped_html_data(i,xd)
 
             # chiude HTML con i tag ancora aperti
             self.hb.end()
@@ -775,6 +760,7 @@ class Xml2Html:
             """gestisce il settaggio degli overflow
             modifica il parametro self.hb.tag_lst,
             """
+            print("Elab OverFlow")
             html_over = HtmlOvweflow(self.x_data_lst,
                                      self.hb.tag_lst,
                                      self.html_tag_dict)
@@ -783,21 +769,21 @@ class Xml2Html:
             # cancella o tag XX
             self.hb.del_tags('XXX')
 
+            print("CHeck HTML")
             # controllo dei parametri %par% non settati
             self.check_html()
 
             # html su una riga versione per produzione
-            # FIXME html = self.hb.html_onerow()
+            # FIXME AAA  html = self.hb.html_onerow()
             html = self.hb.html_format()
 
             # setta i parametri _..._ definiti nel file <name>.json
             html = self.set_html_pramas(html)
 
             s = "<!doctype html>"+os.linesep+html
-            # BUG write_path_file da modificare
-            #AAA fu.write_path_file(html_path, s, write_append)
+            #fu.write_path_file(html_path, s, write_append)
             ptu.make_dir_of_file(html_path)
-            with open(html_path,write_append) as f:
+            with open(html_path, write_append) as f:
                 f.write(s)
 
         except Exception as e:

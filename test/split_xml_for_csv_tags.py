@@ -121,14 +121,14 @@ class SplitXml:
                 # trovaro
                 pth = F"xml_test/{d_i}/{tag}.xml"
                 s=xml_div(xml)
-                #AAA fu.write_path_file(pth,s)
+                #fu.write_path_file(pth,s)
                 ptu.make_dir_of_file(pth)
                 with open(pth,"w") as f:
                     f.write(s)
             else:
                 # non esiste un segmento xm che contenga il tag
                 pth = F"xml_test/{d_i}_null/{tag}.xml"
-                #AAA fu.write_path_file(pth,"null")
+                #fu.write_path_file(pth,"null")
                 ptu.make_dir_of_file(pth)
                 with open(pth,"w") as f:
                     f.write("null")
@@ -145,17 +145,17 @@ class SplitXml:
                 #trovato
                 pth = F"xml_test/{d_i}/{tag_attr}.xml"
                 s=xml_div(xml)
-                #AAA fu.write_path_file(pth,s)
+                #fu.write_path_file(pth,s)
                 ptu.make_dir_of_file(pth)
                 with open(pth,"w") as f:
                     f.write(s)
             else:
                 #non trovato
                 pth = F"xml_test/{d_i}_null/{tag_attr}.xml"
-                #AAA fu.write_path_file(pth,"null")
+                #fu.write_path_file(pth,"null")
                 ptu.make_dir_of_file(pth)
                 with open(pth,"w") as f:
-                    f.write(s)
+                    f.write("null")
 
     def split_xml(self, xml_path):
         # per ogni nodo costruisce un segmento completo xml

@@ -134,9 +134,9 @@ class XmlNodeList:
         nd_lst = []
         try:
             src = open(xml_path, "r").read()
-            # AAA src = src.replace("<TEI>", "")
+            # src = src.replace("<TEI>", "")
             # src = src.replace("</TEI>", "")
-            # AAA src = "<body>"+src+"</body>"
+            # src = "<body>"+src+"</body>"
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():
@@ -152,7 +152,7 @@ class XmlNodeList:
             src = open(xml_path, "r").read()
             # src = src.replace("<TEI>", "<div>")
             # src = src.replace("</TEI>", "</div>")
-            #AAAsrc = "<body>"+src+"</body>"
+            # src = "<body>"+src+"</body>"
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():

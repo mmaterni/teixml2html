@@ -71,7 +71,6 @@ def cvs2json(csv, html_tag_type):
             continue
         try:
             row_data = {}
-            #TODO row = row.replace(os.linesep, '')
             flds = row.split('|')
             if len(flds) < TAG_COL_NUM:
                 le = len(flds)

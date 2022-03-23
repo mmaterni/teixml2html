@@ -40,7 +40,7 @@ def set_conf_json(xml_path, tag_path, di, wtn, pid):
         dip_int = "dipl" if di == 'd' else "inter"
         conf_path = xml_path.replace(".xml", f"_{dip_int}.json")
         s = json.dumps(html_cfg, indent=2)
-        # AAA fu.write_path_file(conf_path, s)
+        # fu.write_path_file(conf_path, s)
         ptu.make_dir_of_file(conf_path)
         with open(conf_path, "w") as f:
             f.write(s)

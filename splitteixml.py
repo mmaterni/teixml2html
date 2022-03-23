@@ -139,7 +139,7 @@ class XmlSplitEps:
         return path
 
     def get_notes(self):
-        # TODO get_root
+        # get_root
         if self.back is None:
             return ""
         root_back = self.back
