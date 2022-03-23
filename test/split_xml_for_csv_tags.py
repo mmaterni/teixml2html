@@ -114,7 +114,7 @@ class SplitXml:
             p = tag.find('+')
             if p > -1:
                 continue
-
+            #print(tag)
             # trova il segmento xml che contiee il tag
             xml = self.find_tag_in_xml_list(tag)
             if xml != '':
@@ -138,6 +138,7 @@ class SplitXml:
             p = tag.find('+')
             if p < 0:
                 continue
+            #print(tag)
             xml = self.find_attr_in_xml_list(tag)
             tag_attr = tag.replace('+', '_')
             if xml != '':
@@ -160,10 +161,12 @@ class SplitXml:
         # per ogni nodo costruisce un segmento completo xml
         nd_lst = self.xnl.xml_node_list(xml_path)
         self.xml_lst = self.xml_list(nd_lst)
+        
         # lettura tagd csv
         tag_path = "teimcfg/html.csv"
         tag_dip_lst = self.read_csv(tag_path, "d")
         tag_int_lst = self.read_csv(tag_path, "i")
+        
         # per ogni tag trova il segmento xml 
         # che lo contiene e lo scrive
         self.write_xml_for_tag(tag_dip_lst,"dipl")

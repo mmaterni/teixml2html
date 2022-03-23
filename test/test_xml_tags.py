@@ -4,7 +4,6 @@ import pathlib as pl
 import tx2h
 import sys
 from pdb import set_trace
-from . import _file_utils as fu
 
 """
 test di tutti i i tags
@@ -36,6 +35,8 @@ def exec_test(d_i):
     try:
         for x in lst:
             xml_path = f'{x}'
+            tag=xml_path.split("/")[-1:][0]
+            print(tag.replace('.xml',''))
             html_path = xml_path.replace("xml", "html")
             tx2h.do_main(xml_path,
                          html_path,

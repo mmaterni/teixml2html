@@ -56,7 +56,7 @@ class XmlNodeList:
                 tag = tag[pid + 1:]
             return tag.strip()
         except Exception as e:
-            msg=f"ERROR {self.xml_path} node_tag()\n{e} "
+            msg = f"ERROR {self.xml_path} node_tag()\n{e} "
             raise Exception(msg)
 
     def node_id(self, nd):
@@ -105,19 +105,23 @@ class XmlNodeList:
     def get_node_data(self, nd):
         items = self.node_items(nd)
         id_ = self.node_id(nd)
-        liv=self.node_liv(nd)
-        #evita val troppo grandi
-        if liv < 3:
-            val=''
+        liv = self.node_liv(nd)
+        tag = self.node_tag(nd)
+        # evita val troppo grandi
+        if liv < 2:
+            val = ''
         else:
-            val=self.node_val(nd)
+            val = self.node_val(nd)
+            if len(val) > 1000:
+                val = ''
+
         if id_ != '':
             id_num = self.node_id_num(id_)
             items['id_num'] = id_num
         return {
             'id': id_,
             'liv': liv,
-            'tag': self.node_tag(nd),
+            'tag': tag,
             'text': self.node_text(nd),
             'tail': self.node_tail(nd),
             'items': items,
@@ -126,25 +130,24 @@ class XmlNodeList:
             'is_parent': self.node_is_parent(nd)
         }
 
-    def xml_node_list(self,xml_path):
-        nd_lst=[]
+    def xml_node_list(self, xml_path):
+        nd_lst = []
         try:
             src = open(xml_path, "r").read()
-            #AAA src = src.replace("<TEI>", "")
+            # AAA src = src.replace("<TEI>", "")
             # src = src.replace("</TEI>", "")
-            #AAA src = "<body>"+src+"</body>"
+            # AAA src = "<body>"+src+"</body>"
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():
                 nd_lst.append(nd)
         except Exception as e:
-            msg=f"ERROR xml_node_list()\nfile:{xml_path} \n{e}"
+            msg = f"ERROR xml_node_list()\nfile:{xml_path} \n{e}"
             raise Exception(msg)
         return nd_lst
 
-
-    def xml_node_data_list(self,xml_path):
-        x_data_lst=[]
+    def xml_node_data_list(self, xml_path):
+        x_data_lst = []
         try:
             src = open(xml_path, "r").read()
             # src = src.replace("<TEI>", "<div>")
@@ -153,9 +156,9 @@ class XmlNodeList:
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():
-                x_data=self.get_node_data(nd)
+                x_data = self.get_node_data(nd)
                 x_data_lst.append(x_data)
         except Exception as e:
-            msg=f"ERROR xml_node_data_list()\nfile:{xml_path}\n{e}"
+            msg = f"ERROR xml_node_data_list()\nfile:{xml_path}\n{e}"
             raise Exception(msg)
         return x_data_lst
