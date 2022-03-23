@@ -7,8 +7,8 @@ import re
 from lxml import etree
 from teiprjhtmlmake import LOG
 
-__date__ = "22-01-2022"
-__version__ = "0.0.1"
+__date__ = "22-03-2022"
+__version__ = "0.0.2"
 __author__ = "Marta Materni"
 
 
@@ -104,19 +104,25 @@ class XmlNodeList:
 
     def get_node_data(self, nd):
         items = self.node_items(nd)
-        id = self.node_id(nd)
-        if id != '':
-            id_num = self.node_id_num(id)
+        id_ = self.node_id(nd)
+        liv=self.node_liv(nd)
+        #evita val troppo grandi
+        if liv < 3:
+            val=''
+        else:
+            val=self.node_val(nd)
+        if id_ != '':
+            id_num = self.node_id_num(id_)
             items['id_num'] = id_num
         return {
-            'id': id,
-            'liv': self.node_liv(nd),
+            'id': id_,
+            'liv': liv,
             'tag': self.node_tag(nd),
             'text': self.node_text(nd),
             'tail': self.node_tail(nd),
             'items': items,
             # 'keys': self.node_keys(nd),
-            'val': self.node_val(nd),
+            'val': val,
             'is_parent': self.node_is_parent(nd)
         }
 
@@ -124,9 +130,9 @@ class XmlNodeList:
         nd_lst=[]
         try:
             src = open(xml_path, "r").read()
-            src = src.replace("<TEI>", "")
-            src = src.replace("</TEI>", "")
-            src = "<body>"+src+"</body>"
+            #AAA src = src.replace("<TEI>", "")
+            # src = src.replace("</TEI>", "")
+            #AAA src = "<body>"+src+"</body>"
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():
@@ -141,9 +147,9 @@ class XmlNodeList:
         x_data_lst=[]
         try:
             src = open(xml_path, "r").read()
-            src = src.replace("<TEI>", "")
-            src = src.replace("</TEI>", "")
-            src = "<body>"+src+"</body>"
+            # src = src.replace("<TEI>", "<div>")
+            # src = src.replace("</TEI>", "</div>")
+            #AAAsrc = "<body>"+src+"</body>"
             parser = etree.XMLParser(ns_clean=True)
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():

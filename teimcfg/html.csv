@@ -4,10 +4,21 @@ x|x|_x_
 x|x+y|_xy_
 
 x|null|null
-x|tei|XXX|
-x|body|XXX|
-x|back|XXX|
+x|err|XXX
 
+x|tei|div|
+x|TEI|div|
+x|body|div|
+x|back|div|
+
+x|teiHeader|XXX|
+x|fileDesc|XXX|
+x|title|XXX|
+x|titleStmt|XXX|
+x|publicationStmt|XXX|
+x|sourceDesc|XXX|
+
+x|text|div||
 x|head|div|id,n||
 x|seg|div|id,n||
 x|s|div|id,n||
