@@ -10,9 +10,8 @@ from teimedlib.ualog import Log
 from teimedlib.xml_const import *
 import re
 
-
-__date__ = "20-04-2021"
-__version__ = "0.2.1"
+__date__ = "26-04-2021"
+__version__ = "0.2.2"
 __author__ = "Marta Materni"
 
 
@@ -20,8 +19,8 @@ logerr = Log("w")
 loginfo = Log("w")
 
 
-def pp_data(data):
-    s = pprint.pformat(data, indent=0, width=80)
+def pp_data(data,w=40):
+    s = pprint.pformat(data, indent=0, width=w)
     return s
 
 

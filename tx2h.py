@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from pdb import set_trace
 import sys
 import argparse
 import teimedlib.pathutils as ptu
 from teixml2html import Xml2Html
 import json
-from pdb import set_trace
 
 __date__ = "22-03-2022"
 __version__ = "0.0.3"
