@@ -19,7 +19,7 @@ def path2str(path):
     try:
         if path is None:
             raise(Exception("path2str() path is None"))
-        # UA s = f"{path}"
+        # TODO s = f"{path}"
         s = path.as_posix()
         return s.strip()
     except Exception as e:
@@ -132,7 +132,7 @@ def chmod(path_x, mode=0o777):
         #os.chmod(path, stat.S_IRWXG + stat.S_IRWXU + stat.S_IRWXO)
         path.chmod(mode=mode)
     except Exception as e:
-        msg = f"ERROR chmod() {os.linesep}{e}"
+        msg = f"chmod() {os.linesep}{e}"
         raise(Exception(msg))
 
 
@@ -151,16 +151,20 @@ def make_dir_of_file(path_x, mode=0o777):
             path = pth.Path(path_x)
         else:
             path = path_x
-        ps = path.parent.parts
+        path_abs=path.absolute()
+        path_abs_parent=path_abs.parent
+        ps = path_abs_parent.parts
         path_dir_s = ps[0]
         path_dir = pth.Path(path_dir_s)
+        # if not path_dir.exists():
         path_dir.mkdir(exist_ok=True)
-        chmod(path_dir_s, mode)
+        #chmod(path_dir_s, mode)
         for p in ps[1:]:
             path_dir_s = f"{path_dir_s}/{p}"
             path_dir = pth.Path(path_dir_s)
+            # if not path_dir.exists():
             path_dir.mkdir(exist_ok=True)
-            chmod(path_dir_s, mode)
+            #chmod(path_dir_s, mode)
     except Exception as e:
-        msg = f"ERROR make_dir_of_file()\n{e}"
+        msg = f"ERROR make_dir_of_file() {path_x}\n{e}"
         raise(Exception(msg))

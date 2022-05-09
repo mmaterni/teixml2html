@@ -13,7 +13,7 @@ pert utti i files in
 xml_test/dipl
 lancia test_dipl.py
 
-xml_test/intre
+xml_test/inter
 lancia  test_inter.py
 
 popola
