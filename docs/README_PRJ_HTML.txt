@@ -188,7 +188,7 @@ writehtml.py
 -i '</div>'
 -wa a
 ======================================
-files dei arametri per le singole applicazioni in
+files dei parametri per le singole applicazioni in
 flori_html/prj_teimcfg
 =======================================
 padova_dipl_syn.json

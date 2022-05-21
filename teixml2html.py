@@ -52,7 +52,7 @@ def ppx(xdata, w=120):
 
 
 class Xml2Html:
-    
+
     def __init__(self):
         log_info.open("log/teixml2html.log", 0)
         log_conf.open("log/teimcfg.json", 0)
@@ -119,16 +119,17 @@ class Xml2Html:
                     tag_p = pk[0]
                     k_p = pk[1]
                     x_data_p = self.x_data_dict.get(tag_p, None)
-                    # print("------------------------")
-                    # print(self.xml_path)
-                    # print(src)
-                    # print("x_items: "+pp(x_items))
-                    # print("ks: "+pp(ks))
-                    # print("k: "+k)
-                    # print(tag_p)
-                    # print(pp(x_data_p))
-                    # input("?")
                     if x_data_p is None:
+                        print("------------------------")
+                        print(self.xml_path)
+                        print(src)
+                        print("x_items: "+pp(x_items))
+                        print("ks: "+pp(ks))
+                        print("k: "+k)
+                        print("tag_p"+tag_p)
+                        print(pp(x_data_p))
+                        # input("?")
+                        set_trace()
                         raise Exception(f"tag parent {tag_p} not found.")
                     xitems_p = x_data_p['items']
                     v = xitems_p.get(k_p, f'%{k}%')
@@ -562,7 +563,7 @@ class Xml2Html:
                 self.w_liv = 100
         return text, tail
 
-    def apped_html_data(self,row_num, x_data):
+    def apped_html_data(self, row_num, x_data):
         """
         estrae da nd x_data
         invoca remove_params_null()
@@ -728,7 +729,7 @@ class Xml2Html:
             html_path (str): filr name html 
         """
         try:
-            # debug_liv = 2  
+            # debug_liv = 2
             inp.set_liv(debug_liv)
             self.x_data_lst = []
             self.xml_path = xml_path
@@ -750,8 +751,8 @@ class Xml2Html:
                 log_err.log(e)
                 sys.exit(1)
 
-            for i,xd in enumerate(self.x_data_lst):
-                self.apped_html_data(i,xd)
+            for i, xd in enumerate(self.x_data_lst):
+                self.apped_html_data(i, xd)
 
             # chiude HTML con i tag ancora aperti
             self.hb.end()
