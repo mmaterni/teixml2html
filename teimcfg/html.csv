@@ -46,7 +46,9 @@ d|pc+#1hd|span|id|class:pc_1hd
 d|pc+#1hd-r|span|id|class:pc_1hd_r
 d|pc+#2hd|span|id|class:pc_2hd
 
+#i|pc+#ed|span|id|class:pc_ed%%text%%_int|%text%|.:_upc,!:_upc,?:_upc
 i|pc+#ed|span|id|class:pc_ed%%text%%_int|%text%|.:_upc,!:_upc,?:_upc
+
 i|pc+#1hd|span|id|class:pc_1hd%%text%%_int|%text%|.:_upc,!:_upc,?:_upc
 i|pc+#1hd-r|span|id|class:pc_1hd_r%%text%%_int|%text%|.:_upc,!:_upc,?:_upc
 i|pc+#2hd|span|id|class:pc_2hd%%text%%_int|%text%|.:_upc,!:_upc,?:_upc

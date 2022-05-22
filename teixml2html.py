@@ -92,7 +92,7 @@ class Xml2Html:
         # flag per gestione set_trace()
         self.trace = False
         # setta input per gestione errori
-        inp.set_liv(0)
+        inp.set_liv(2)
 
     # html_attrs = self.set_x_items(html_attrs, x_items)
     # c_text = self.set_x_items(c_text, x_items)
@@ -271,23 +271,31 @@ class Xml2Html:
                     pk = k.split('@')
                     tag_p = pk[0]
                     x_data_p = self.x_data_dict.get(tag_p, None)
-                    # print("------------------------")
-                    # print(self.xml_path)
-                    # print(c_text)
-                    # print("x_text: "+x_text)
-                    # print("ks: "+pp(ks))
-                    # print("k: "+k)
-                    # print(tag_p)
-                    # print(pp(x_data_p))
-                    # input("?")
+                    # if c_text.find("pc")> -2:
+                    #     print("------------------------")
+                    #     print(c_text)
+                    #     print("x_text: "+x_text)
+                    #     print("ks: "+pp(ks))
+                    #     print("k: "+k)
+                    #     print(tag_p)
+                    #     print(pp(x_data_p))
+                    #     input("?")
                     if x_data_p is None:
-                        raise Exception(
-                            f"tag parent: {tag_p} not found.")
-                    x_text = x_data_p['text']
-                    ok = True
-                c_text = c_text.replace(f'%{k}%', x_text)
-            if t0 != c_text:
-                ok = True
+                        # raise Exception(
+                        #     f"tag parent: {tag_p} not found.")
+                        log_err.log(f"tag parent: {tag_p} not found.")
+                        log_err.log("text: {text}")
+                        log_err.log("text_par:", x_text)
+                        tag_w_last = self.get_tag_w_last()
+                        log_err.log("last tag w: ", tag_w_last)
+                        log_err.log(os.linesep)
+                        inp.inp("", "!")
+                    else:
+                        x_text = x_data_p['text']
+                        ok = True
+                        c_text = c_text.replace(f'%{k}%', x_text)
+                        if t0 != c_text:
+                            ok = True
         except Exception as e:
             log_err.log(f"ERROR_2  set_text_in_c_text()")
             log_err(e)
@@ -446,7 +454,7 @@ class Xml2Html:
                 break
         return tag_w_last
 
-    def build_html_data(self, x_data):
+    def build_html_data(self, x_data,row_num):
         """raccoglie i dati per costruire un elemnt html
         Args:
             x_data (dict): dati presi da xml
@@ -474,6 +482,7 @@ class Xml2Html:
         html_attrs = self.build_html_attrs(x_items, c_keys, c_attrs)
 
         log_info.log("---------------------------").prn(0)
+        log_info.log(f"{row_num})")
         log_info.log(f"TAG: {x_tag}  {c_tag}").prn(0)
         log_info.log(">> x_data").prn(0)
         log_info.log(ppx(x_data)).prn(0)
@@ -585,7 +594,7 @@ class Xml2Html:
         x_is_parent = x_data['is_parent']
         x_tag = x_data['tag']
         # setta dati per tag html
-        h_data = self.build_html_data(x_data)
+        h_data = self.build_html_data(x_data,row_num)
         h_tag = h_data['tag']
         h_text = h_data['text']
         h_tail = h_data['tail']
@@ -674,7 +683,7 @@ class Xml2Html:
             if not ms is None:
                 log_err.log(f"ERROR check_tml()")
                 log_err.log(f"parametro: {ms.group()}")
-                log_err.log(f"row: {i}")
+                log_err.log(f"row: {i+1}")
                 log_err.log(row.strip())
                 log_err.log("---------------------")
                 log_err.log(os.linesep)
