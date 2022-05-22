@@ -3,8 +3,8 @@
 
 import os
 
-__date__ = "14-03-2023"
-__version__ = "0.5.5"
+__date__ = "21-05-2022"
+__version__ = "0.5.6"
 __author__ = "Marta Materni"
 
 
@@ -52,10 +52,12 @@ class Log(object):
             if not os.path.exists(self.path_log):
                 if not os.path.isdir(self.dirname):
                     os.mkdir(self.dirname)
-                    os.chmod(self.dirname, 0o777)
+                    # os.chmod(self.dirname, 0o777)
         f = open(self.path_log, self.append_write)
-        f.close()
-        os.chmod(self.path_log, 0o777)
+        with open(self.path_log, self.append_write) as f:
+            f.write("")
+            # f.close()
+        # os.chmod(self.path_log, 0o777)
         self.used = True
 
     def prn(self, liv=1):
@@ -70,10 +72,11 @@ class Log(object):
             self.open_file()
         ls = ["None" if x is None else str(x) for x in args]
         s = f"{os.linesep}".join(ls)
-        f = open(self.path_log, "a")
-        f.write(s)
-        f.write(os.linesep)
-        f.close()
+        # f = open(self.path_log, "a")
+        with open(self.path_log, "a") as f:      
+            f.write(s)
+            f.write(os.linesep)
+            # f.close()
         self.msg = s
         if self.out_liv > 0:
             print(s)

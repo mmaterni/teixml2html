@@ -31,8 +31,8 @@ x|pb|div|id,n|class:pb
 
 x:txt|cb|div|id|class:cb|%n%
 
-#x:syn|cb|div>div|id|class:cb cbpb|<div class="cb_tt">%pb@n%
-x:syn|cb|div>div|id|class:cb cbpb|<div class="cb_tt">%pb@n%%n%
+x:syn|cb|div>div|id|class:cb cbpb|<div class="cb_tt">%pb@n%
+# x:syn|cb|div>div|id|class:cb cbpb|<div class="cb_tt">%pb@n%%n%
 
 x|lg|div|id|class:lg|<span class="lgnum">[%id_num%]</span>
 x|l|div|id,n|class:l|<span class="lnum">.%id_num%</span>
@@ -78,7 +78,7 @@ d|c+#lram-c|span||class:ramis
 
 i|c+e-ton|span||class:diacr_int|%%text%%|e:é
 i|c+#e-ton|span||class:diacr_int|%%text%%|e:é,E:É
-i|c+#hiat|span||class:diacr_int|%%text%%|i:ï,u:ü,e:ë,o:ö
+i|c+#hiat|span||class:diacr_int|%%text%%|i:ï,u:ü,e:ë
 i|c+#ced-dipl|span||class:diacr_int|%%text%%|ç:ç
 i|c+#affr|span||class:diacr_int|%%text%%|c:ç
 i|c+#diacr-desamb|span||class:diacr_int|%%text%%|a:à,o:ò,u:ù,e:è,A:à,E:è,I:ì,O:ò,U:ù
