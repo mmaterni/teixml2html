@@ -30,7 +30,7 @@ LOG_ERR_WA = 'w'
 log_conf = Log("w")
 log_info = Log("w")
 log_err = Log(LOG_ERR_WA)
-log_err = Log(LOG_ERR_WA)
+# log_html_err = Log(LOG_ERR_WA)
 # log_csv_err = Log(LOG_ERR_WA)
 # log_debug = Log("a")
 
@@ -88,8 +88,11 @@ class Xml2Html:
         self.csv_tag_ctrl = None
 
         self.w_liv = 0
+
         # flag per gestione set_trace()
         self.trace = False
+        # setta input per gestione errori
+        inp.set_liv(0)
 
     # html_attrs = self.set_x_items(html_attrs, x_items)
     # c_text = self.set_x_items(c_text, x_items)
@@ -225,13 +228,13 @@ class Xml2Html:
                     # print(pp(x_data_p))
                     # input("?")
                     if x_data_p is None:
-                        html_attrs=''
+                        html_attrs = ''
                         log_err.log(f'xml : {self.xml_path}')
                         log_err.log(f"miss the previous tag: {tag_p}.")
                         log_err.log("text: {text}")
                         log_err.log("tag parent : "+tag_p)
                         tag_w_last = self.get_tag_w_last()
-                        log_err.log("last tag w : "+ tag_w_last)
+                        log_err.log("last tag w : " + tag_w_last)
                         log_err.log(os.linesep)
                         inp.inp("", "!")
                     else:
@@ -665,15 +668,38 @@ class Xml2Html:
         ptrn = r"%[\w/,;:.?!^-]+%"
         lst = self.hb.tag_lst
         # le = len(lst)
+        n=0
         for i, row in enumerate(lst):
             ms = re.search(ptrn, row)
             if not ms is None:
-                log_err.log(f"ERROR_6 check_tml()")
+                log_err.log(f"ERROR check_tml()")
                 log_err.log(f"parametro: {ms.group()}")
                 log_err.log(f"row: {i}")
                 log_err.log(row.strip())
                 log_err.log("---------------------")
                 log_err.log(os.linesep)
+                inp.inp('', '!')
+
+    def check_html_format(self, html_format):
+        """ controlla tutte le righe htnl 
+        per verificare che vi sda qualche parametro
+        del tipo %param% non settato
+        """
+        lst = html_format.split(os.linesep)
+        # ptrn = r"%[\w/,;:.?!^-]+%"
+        ptrn = r"%"
+        n = 0
+        for i, row in enumerate(lst):
+            ms = re.search(ptrn, row)
+            if not ms is None:
+                if n == 0:
+                    log_err.log(f"ERROR check_tml_format()")
+                    n += 1
+                # log_err.log(f"parametro: {ms.group()}")
+                log_err.log(f"row: {i}")
+                log_err.log(row.strip())
+                log_err.log("---------------------")
+                # log_err.log(os.linesep)
                 inp.inp('', '!')
 
     def read_conf(self, json_conf_path):
@@ -777,17 +803,24 @@ class Xml2Html:
             self.check_html()
 
             # html su una riga versione per produzione
-            # AAA  html = self.hb.html_onerow()
-            html = self.hb.html_format()
+            html_one_row = self.hb.html_onerow()
 
             # setta i parametri _..._ definiti nel file <name>.json
-            html = self.set_html_pramas(html)
+            html_one_row = self.set_html_pramas(html_one_row)
 
-            s = "<!doctype html>"+os.linesep+html
+            s = "<!doctype html>"+os.linesep+html_one_row
             # fu.write_path_file(html_path, s, write_append)
             ptu.make_dir_of_file(html_path)
             with open(html_path, write_append) as f:
                 f.write(s)
+
+            # file html formattato per controll9
+            print("CHeck HTML FORMAT")
+            html_format = self.hb.html_format()
+            self.check_html_format(html_format)
+            hrml_format_path = html_path.replace(".html", "_format.html")
+            with open(hrml_format_path, "w") as f:
+                f.write(html_format)
 
         except Exception as e:
             log_err.log(f"ERROR_D  write_html()")
