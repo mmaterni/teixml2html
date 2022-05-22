@@ -25,7 +25,7 @@ __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
 DEBUG_HTML = False
-LOG_ERR_WA = 'w'
+LOG_ERR_WA = 'a'
 
 log_conf = Log("w")
 log_info = Log("w")
@@ -91,8 +91,6 @@ class Xml2Html:
 
         # flag per gestione set_trace()
         self.trace = False
-        # setta input per gestione errori
-        inp.set_liv(2)
 
     # html_attrs = self.set_x_items(html_attrs, x_items)
     # c_text = self.set_x_items(c_text, x_items)
@@ -218,15 +216,6 @@ class Xml2Html:
                     pk = k.split('@')
                     tag_p = pk[0]
                     x_data_p = self.x_data_dict.get(tag_p, None)
-                    # print("------------------------")
-                    # print(self.xml_path)
-                    # print(html_attrs)
-                    # print("x_text: "+x_text)
-                    # print("ks: "+pp(ks))
-                    # print("k: "+k)
-                    # print(tag_p)
-                    # print(pp(x_data_p))
-                    # input("?")
                     if x_data_p is None:
                         html_attrs = ''
                         log_err.log(f'xml : {self.xml_path}')
@@ -239,7 +228,7 @@ class Xml2Html:
                         inp.inp("", "!")
                     else:
                         x_text = x_data_p['text']
-                        html_attrs = html_attrs.replace(f'%{k}%', x_text)
+                html_attrs = html_attrs.replace(f'%{k}%', x_text)
         except Exception as e:
             log_err.log(f"ERROR_1  set_text_in_html_attr()")
             log_err(e)
@@ -271,18 +260,7 @@ class Xml2Html:
                     pk = k.split('@')
                     tag_p = pk[0]
                     x_data_p = self.x_data_dict.get(tag_p, None)
-                    # if c_text.find("pc")> -2:
-                    #     print("------------------------")
-                    #     print(c_text)
-                    #     print("x_text: "+x_text)
-                    #     print("ks: "+pp(ks))
-                    #     print("k: "+k)
-                    #     print(tag_p)
-                    #     print(pp(x_data_p))
-                    #     input("?")
                     if x_data_p is None:
-                        # raise Exception(
-                        #     f"tag parent: {tag_p} not found.")
                         log_err.log(f"tag parent: {tag_p} not found.")
                         log_err.log("text: {text}")
                         log_err.log("text_par:", x_text)
@@ -293,9 +271,9 @@ class Xml2Html:
                     else:
                         x_text = x_data_p['text']
                         ok = True
-                        c_text = c_text.replace(f'%{k}%', x_text)
-                        if t0 != c_text:
-                            ok = True
+                c_text = c_text.replace(f'%{k}%', x_text)
+                if t0 != c_text:
+                    ok = True
         except Exception as e:
             log_err.log(f"ERROR_2  set_text_in_c_text()")
             log_err(e)
@@ -333,7 +311,7 @@ class Xml2Html:
         return " ".join(ls)
 
     def build_html_attrs(self, x_items, c_keys=[], c_attrs={}):
-        """seleziona gli elemnti di x_items filtrati da c_kets
+        """seleziona gli elemnti di x_items filtrati da c_keys
            aggiunge gli elementi c_attrs {}
         Args:
             x_items ([dict]): xml items
@@ -454,7 +432,7 @@ class Xml2Html:
                 break
         return tag_w_last
 
-    def build_html_data(self, x_data,row_num):
+    def build_html_data(self, x_data, row_num):
         """raccoglie i dati per costruire un elemnt html
         Args:
             x_data (dict): dati presi da xml
@@ -523,10 +501,12 @@ class Xml2Html:
             'text': html_text,
             'tail': x_tail
         }
+
         log_info.log(">>2 c_text").prn(0)
         log_info.log(c_text).prn(0)
         log_info.log(">> x_text").prn(0)
         log_info.log(x_text).prn(0)
+        
         log_info.log(">>2 html_attrs").prn(0)
         log_info.log(html_attrs).prn(0)
         log_info.log(">> html_data").prn(0)
@@ -590,11 +570,16 @@ class Xml2Html:
         """
         if row_num % 1000 == 0:
             print(row_num)
+
+        #AAA
+        if x_data['text'].find("AAA")> -1:
+            self.trace=True
+
         x_liv = x_data['liv']
         x_is_parent = x_data['is_parent']
         x_tag = x_data['tag']
         # setta dati per tag html
-        h_data = self.build_html_data(x_data,row_num)
+        h_data = self.build_html_data(x_data, row_num)
         h_tag = h_data['tag']
         h_text = h_data['text']
         h_tail = h_data['tail']
@@ -677,7 +662,7 @@ class Xml2Html:
         ptrn = r"%[\w/,;:.?!^-]+%"
         lst = self.hb.tag_lst
         # le = len(lst)
-        n=0
+        n = 0
         for i, row in enumerate(lst):
             ms = re.search(ptrn, row)
             if not ms is None:
@@ -767,7 +752,7 @@ class Xml2Html:
             html_path (str): filr name html 
         """
         try:
-            # debug_liv = 2
+            debug_liv = 2
             inp.set_liv(debug_liv)
             self.x_data_lst = []
             self.xml_path = xml_path
@@ -813,10 +798,8 @@ class Xml2Html:
 
             # html su una riga versione per produzione
             html_one_row = self.hb.html_onerow()
-
             # setta i parametri _..._ definiti nel file <name>.json
             html_one_row = self.set_html_pramas(html_one_row)
-
             s = "<!doctype html>"+os.linesep+html_one_row
             # fu.write_path_file(html_path, s, write_append)
             ptu.make_dir_of_file(html_path)
@@ -826,10 +809,12 @@ class Xml2Html:
             # file html formattato per controll9
             print("CHeck HTML FORMAT")
             html_format = self.hb.html_format()
-            self.check_html_format(html_format)
+            html_format = self.set_html_pramas(html_format)
+            s = "<!doctype html>"+os.linesep+html_format
+            self.check_html_format(s)
             hrml_format_path = html_path.replace(".html", "_format.html")
             with open(hrml_format_path, "w") as f:
-                f.write(html_format)
+                f.write(s)
 
         except Exception as e:
             log_err.log(f"ERROR_D  write_html()")
