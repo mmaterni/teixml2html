@@ -25,7 +25,7 @@ def pp_data(data,w=40):
 
 
 """
-splitta path_xml_in negli episodi ci scribe in dir_out
+splitta path_xml_in negli episodi li scrive in dir_out
 produce <man>_list.xml con l'elenco degli episodi e scrive in dir_out
 produce <man>_list.txt con l'elenco degli episodi e scrice i dir_out
 """
@@ -250,16 +250,21 @@ class XmlSplitEps:
         ls = root_body.findall('div')
         eps_lst = []
         eps_num_lst = []
+
         # div null per contenere la lista episodi
         eps_lst.append(NULL_TAG_START)
+
         for xml_node in ls:
             ks = self.node_attrs(xml_node)
             src = self.node_src(xml_node)
+
             # pagina iniziale con lista episoid
             eps_lst.append(src)
+
             # file testo con lista episodi
             eps_num = ks['ref'].replace('#', '')
             eps_num_lst.append(eps_num)
+            
             # sottoalberi episodi
             # controllo inizio pagina
             pbcb = self.begin_pag_dupl(xml_node)
