@@ -81,7 +81,7 @@ class Xml2Html:
         self.x_data_dict = None
 
         # stack dei nodi che sono si/no container
-        # BUG verificare funzionamento
+        # FIXME verificare funzionamento
         self.is_container_stack = [False for i in range(1, 20)]
 
         # tag di controllo per erroi csv _x_ _xy_
@@ -445,7 +445,6 @@ class Xml2Html:
         x_tail = x_data['tail']
         x_liv = x_data['liv']
 
-        #AAA
         # if x_data['text'].find("AAA")> -1:
         #     self.trace=True
         #     pass

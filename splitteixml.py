@@ -170,7 +170,7 @@ class XmlSplitEps:
             return "XXX"
 
     def prn_node(self, nd):
-        # TODO stampa nodo nel log
+        # stampa nodo nel log
         return
         tag = self.node_tag(nd)
         ks = self.node_attrs(nd)
