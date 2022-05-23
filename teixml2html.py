@@ -445,6 +445,17 @@ class Xml2Html:
         x_tail = x_data['tail']
         x_liv = x_data['liv']
 
+        #AAA
+        # if x_data['text'].find("AAA")> -1:
+        #     self.trace=True
+        #     pass
+        # if x_data['text'].find("BBB")> -1:
+        #     self.trace=True
+        #     pass
+
+        # if self.trace:
+        #     set_trace()
+
         # FIXME verificare quando è settato container
         self.is_container_stack[x_liv] = False
 
@@ -455,18 +466,17 @@ class Xml2Html:
         c_attrs = c_data.get('attrs', {})
         c_text = c_data.get('text', "")
         c_params = c_data.get('params', {})
-
         # x_items selezionati da c_keys + c_attrs
         html_attrs = self.build_html_attrs(x_items, c_keys, c_attrs)
 
         log_info.log("---------------------------").prn(0)
         log_info.log(f"{row_num})")
         log_info.log(f"TAG: {x_tag}  {c_tag}").prn(0)
-        log_info.log(">> x_data").prn(0)
+        log_info.log(">> x_data:").prn(0)
         log_info.log(ppx(x_data)).prn(0)
-        log_info.log(">> c_data").prn(0)
+        log_info.log(">> c_data:").prn(0)
         log_info.log(pp(c_data)).prn(0)
-        log_info.log(">>1) html_attrs").prn(0)
+        log_info.log(">>1) html_attrs:").prn(0)
         log_info.log(html_attrs).prn(0)
 
         # sostituzioni
@@ -494,7 +504,23 @@ class Xml2Html:
                 x_text = ''
             # setta nuovamente c_text utilizzando c_params
             c_text = self.sett_c_params(c_text, c_params)
+
+        if c_text.find('%') > -1:
+            c_text = self.sett_c_params(c_text, c_params)
+            c_text = self.set_x_items(c_text, x_items)
+            # doppia sostituzione
+            # se c_text=%%text%% x_text sostituisce %text$ che diventa %new_text%
+            # Es:
+            # c_text=%%text%% e x_text=pippo => c_text=%pippo%
+            c_text, is_replace = self.set_text_in_c_text(c_text, x_text)
+            # se c_text modificato dalla seconda sosituzione allora x_text=''
+            if is_replace:
+                x_text = ''
+            # setta nuovamente c_text utilizzando c_params
+            c_text = self.sett_c_params(c_text, c_params)
+
         html_text = x_text+c_text
+
         html_data = {
             'tag': c_tag,
             'attrs': html_attrs,
@@ -502,18 +528,19 @@ class Xml2Html:
             'tail': x_tail
         }
 
-        log_info.log(">>2 c_text").prn(0)
+        log_info.log(">>2 c_text:").prn(0)
         log_info.log(c_text).prn(0)
-        log_info.log(">> x_text").prn(0)
+        log_info.log(">> x_text:").prn(0)
         log_info.log(x_text).prn(0)
         
-        log_info.log(">>2 html_attrs").prn(0)
+        log_info.log(">>2 html_attrs:").prn(0)
         log_info.log(html_attrs).prn(0)
-        log_info.log(">> html_data").prn(0)
+        log_info.log(">> html_data:").prn(0)
         log_info.log(pp(html_data)).prn(0)
         # errore nella gestione del files csv dei tag html
         # csv_ctrl_tag == cvs_tag+"_x_"
         # csv_ctrl_tag == cvs_tag+"_xy_"
+
         if self.csv_tag_ctrl.find('_x') > -1:
             log_err.log(f"ERROR_4  build_html_data()")
             log_err.log(f"csv_tag_ctrl:{self.csv_tag_ctrl}")
@@ -523,6 +550,11 @@ class Xml2Html:
             log_err.log("last w: ", tag_w_last)
             log_err.log(os.linesep)
             inp.inp("", "!")
+
+        # if self.trace:
+        #     set_trace()
+        #     self.trace=False
+
         return html_data
 
     # verifica se . ! ? da seguire con una maiuscola
@@ -570,10 +602,6 @@ class Xml2Html:
         """
         if row_num % 1000 == 0:
             print(row_num)
-
-        #AAA
-        if x_data['text'].find("AAA")> -1:
-            self.trace=True
 
         x_liv = x_data['liv']
         x_is_parent = x_data['is_parent']
@@ -752,7 +780,7 @@ class Xml2Html:
             html_path (str): filr name html 
         """
         try:
-            debug_liv = 2
+            # debug_liv = 2
             inp.set_liv(debug_liv)
             self.x_data_lst = []
             self.xml_path = xml_path
