@@ -8,11 +8,14 @@ from teimedlib.xml_node_list import XmlNodeList
 import teimedlib.pathutils as ptu
 from lxml import etree
 
-#__date__ = "22-03-2022"
-#__version__ = "0.0.7"
+#__date__ = "22-05-2022"
+#__version__ = "0.0.9"
 
 """
 popola xml_test
+splita un file xml utilizando i tags xml estratti da
+teimtags.csv
+Estrae segmenti sml BF conteneti il singolo tag estratto
 """
 
 def pp(data, w=120):
@@ -173,9 +176,9 @@ class SplitXml:
         self.write_xml_for_tag(tag_int_lst, "inter")
 
 
-def do_main(xp):
+def do_main(xml_path):
     spx = SplitXml()
-    spx.split_xml(xp)
+    spx.split_xml(xml_path)
 
 
 if __name__ == "__main__":
@@ -184,6 +187,5 @@ if __name__ == "__main__":
         print("")
         print("split_xml_for_csv_tags.py  <file_name.xml>")
         sys.exit()
-    xp = sys.argv[1]
-    #xp = "xml/floripar.xml"
-    do_main(xp)
+    xml_path = sys.argv[1]
+    do_main(xml_path)
