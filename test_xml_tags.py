@@ -3,7 +3,6 @@
 import pathlib as pl
 import tx2h
 import sys
-from teimedlib.split_xml_for_csv_tags import SplitXml
 
 """
 test di tutti i i tags
@@ -21,11 +20,6 @@ html_test/dipl
 html_test/inter
 
 """
-
-
-def split_xml_tags(xml_path):
-    spx = SplitXml()
-    spx.split_xml(xml_path)
 
 
 def files_of_dir(path_str, match=None):
