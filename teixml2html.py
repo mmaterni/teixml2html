@@ -843,7 +843,8 @@ class Xml2Html:
             print("CHeck HTML FORMAT")
             html_format = self.hb.html_format()
             html_format = self.set_html_paramas(html_format)
-            s = "<!doctype html>"+os.linesep+html_format
+            # s = "<!doctype html>"+os.linesep+html_format
+            s = html_format
             self.check_html_format(s)
             hrml_format_path = html_path.replace(".html", "_format.html")
             with open(hrml_format_path, write_append) as f:
