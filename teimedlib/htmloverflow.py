@@ -82,7 +82,7 @@ class HtmlOvweflow:
     def text_format(self, text, keys, pars):
         """settta pars su text
         vengono coniserati tutti gli elemnti di text dell
-        pattern [%]\\w[%] e sono rimpiazzati utilizando il 
+        pattern [%]\\w[%] e sono rimpiazzati utilizando  
         gli item di dict pars selezionati da keys
         i parametri non trovati sono settati a ""
         Args:
@@ -203,7 +203,7 @@ class HtmlOvweflow:
             if flag == 0:
                 # verifica se è  word o pc
                 if self.find_w_pc(html_row):
-                    # cera nella riga id_form
+                    # cerca nella riga id_form
                     if self.find_w_id(html_row, id_from):
                         # setta come inizio (flga=0)
                         row = self.add_html_class(0, html_row, span_type)

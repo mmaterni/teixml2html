@@ -19,8 +19,8 @@ import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "22-05-2022"
-__version__ = "0.0.9"
+__date__ = "24-05-2022"
+__version__ = "0.0.11"
 __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
@@ -304,7 +304,8 @@ class Xml2Html:
         ls = []
         for k in ks:
             v = attrs[k]
-            if k == 'id':
+            # AAA if k == 'id': aggiunto from to
+            if k in ['id', 'from', 'to']:
                 v = f'{self.before_id}{v}'
             s = f'{k}="{v}"'
             ls.append(s)
@@ -468,16 +469,17 @@ class Xml2Html:
         # x_items selezionati da c_keys + c_attrs
         html_attrs = self.build_html_attrs(x_items, c_keys, c_attrs)
 
-        log_info.log("---------------------------").prn(0)
+        lg = 0
+        log_info.log("---------------------------").prn(lg)
         log_info.log(f"{row_num})")
-        log_info.log(f"TAG: {x_tag}  {c_tag}").prn(0)
-        log_info.log(">> x_data:").prn(0)
-        log_info.log(ppx(x_data)).prn(0)
-        log_info.log(">> c_data:").prn(0)
-        log_info.log(pp(c_data)).prn(0)
-        log_info.log(">>1) html_attrs:").prn(0)
-        log_info.log(html_attrs).prn(0)
-
+        log_info.log(f"TAG: {x_tag}  {c_tag}").prn(lg)
+        log_info.log(">> x_data:").prn(lg)
+        log_info.log(ppx(x_data)).prn(lg)
+        log_info.log(">> c_data:").prn(lg)
+        log_info.log(pp(c_data)).prn(lg)
+        log_info.log(">>1) html_attrs:").prn(lg)
+        log_info.log(html_attrs).prn(lg)
+        # set_trace()
         # sostituzioni
         if html_attrs.find('%') > -1:
             # sostituisce %text% con x_data['text']
@@ -531,7 +533,7 @@ class Xml2Html:
         log_info.log(c_text).prn(0)
         log_info.log(">> x_text:").prn(0)
         log_info.log(x_text).prn(0)
-        
+
         log_info.log(">>2 html_attrs:").prn(0)
         log_info.log(html_attrs).prn(0)
         log_info.log(">> html_data:").prn(0)
@@ -659,7 +661,7 @@ class Xml2Html:
                 print(self.hb.node_lst_last(int(x)))
                 print("................")
 
-    def set_html_pramas(self, html):
+    def set_html_paramas(self, html):
         """utilizzando il file json formatta i parametri residui
             es. il nome del manoscrittp _WTN_
             qualsiasi altro parametro definito nel file cid 
@@ -762,7 +764,7 @@ class Xml2Html:
                    xml_path,
                    html_path,
                    conf_path,
-                   write_append='w',
+                   write_append,
                    debug_liv=0):
         """fa il parse del file xml_path scrive i files:
             nel formato comapatto: <html_path>
@@ -814,6 +816,7 @@ class Xml2Html:
             html_over = HtmlOvweflow(self.x_data_lst,
                                      self.hb.tag_lst,
                                      self.html_tag_dict)
+            # setta self.hb.tag_lst
             html_over.set_overflow()
 
             # cancella o tag XX
@@ -825,10 +828,13 @@ class Xml2Html:
 
             # html su una riga versione per produzione
             html_one_row = self.hb.html_onerow()
+
             # setta i parametri _..._ definiti nel file <name>.json
-            html_one_row = self.set_html_pramas(html_one_row)
-            s = "<!doctype html>"+os.linesep+html_one_row
-            # fu.write_path_file(html_path, s, write_append)
+            html_one_row = self.set_html_paramas(html_one_row)
+
+            # s = "<!doctype html>"+os.linesep+html_one_row
+            s = html_one_row
+
             ptu.make_dir_of_file(html_path)
             with open(html_path, write_append) as f:
                 f.write(s)
@@ -836,11 +842,11 @@ class Xml2Html:
             # file html formattato per controll9
             print("CHeck HTML FORMAT")
             html_format = self.hb.html_format()
-            html_format = self.set_html_pramas(html_format)
+            html_format = self.set_html_paramas(html_format)
             s = "<!doctype html>"+os.linesep+html_format
             self.check_html_format(s)
             hrml_format_path = html_path.replace(".html", "_format.html")
-            with open(hrml_format_path, "w") as f:
+            with open(hrml_format_path, write_append) as f:
                 f.write(s)
 
         except Exception as e:
