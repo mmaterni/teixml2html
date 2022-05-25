@@ -642,6 +642,17 @@ class Xml2Html:
             inp.inp("", "!")
             return
 
+        # print("------------")
+        # print(x_is_parent)
+        # print(x_liv)
+        # print(h_tag)
+        # print(h_attrs)
+        # print(h_text)
+        # print(h_tail)
+        #AAA
+        if h_attrs.strip()=="":
+            h_tag="XXX"
+
         if x_is_parent:
             self.hb.opn(x_liv, h_tag, h_attrs, h_text, h_tail)
         else:
