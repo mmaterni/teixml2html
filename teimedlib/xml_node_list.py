@@ -108,7 +108,7 @@ class XmlNodeList:
         liv = self.node_liv(nd)
         tag = self.node_tag(nd)
         # evita val troppo grandi
-        if liv < 2:
+        if liv <  2:
             val = ''
         else:
             val = self.node_val(nd)
@@ -162,26 +162,26 @@ class XmlNodeList:
         i = lb_idxs[0]
         rows[i] = rows[i].replace("<lb/>", "<l>")
         for i in lb_idxs[1:]:
-            rows[i]= rows[i].replace("<lb/>", "</l><l>")
-        rows[end_idx]= rows[end_idx].replace("</p>", "</l></p>")
-        src= "".join(rows)
+            rows[i] = rows[i].replace("<lb/>", "</l><l>")
+        rows[end_idx] = rows[end_idx]+"</l>"
+
+        src = "".join(rows)
         open("pippo.xml", "w").write(src)
         return src
 
-
     def xml_node_data_list(self, xml_path):
         self.lb2l(xml_path)
-        x_data_lst= []
+        x_data_lst = []
         try:
-            src= open(xml_path, "r").read()
+            src = open(xml_path, "r").read()
             # src = src.replace("<TEI>", "<div>")
             # src = src.replace("</TEI>", "</div>")
             # src = "<body>"+src+"</body>"
-            parser= etree.XMLParser(ns_clean=True)
-            xml_root= etree.XML(src, parser)
+            parser = etree.XMLParser(ns_clean=True)
+            xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():
-                x_data= self.get_node_data(nd)
-                liv= x_data.get("liv")
+                x_data = self.get_node_data(nd)
+                liv = x_data.get("liv")
                 # AAA controllo sul livello < 2
                 if liv < 2:
                     continue
