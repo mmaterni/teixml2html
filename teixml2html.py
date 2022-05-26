@@ -19,8 +19,8 @@ import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "24-05-2022"
-__version__ = "0.0.11"
+__date__ = "27-05-2022"
+__version__ = "0.0.12"
 __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
@@ -649,9 +649,9 @@ class Xml2Html:
         # print(h_attrs)
         # print(h_text)
         # print(h_tail)
-        #AAA
-        if h_attrs.strip()=="":
-            h_tag="XXX"
+        #FIXME salta i tag senza attrs
+        # if h_attrs.strip()=="":
+        #     h_tag="XXX"
 
         if x_is_parent:
             self.hb.opn(x_liv, h_tag, h_attrs, h_text, h_tail)
@@ -802,8 +802,10 @@ class Xml2Html:
             except Exception as e:
                 msg = f"ERROR_C write_html()\n {e}"
                 raise Exception(msg)
+
             # dict dei dati xml con tag come key
             self.x_data_dict = {}
+
             # tag per controlo
             self.csv_tag_ctrl = ""
             self.hb.init("")
@@ -830,7 +832,7 @@ class Xml2Html:
             # setta self.hb.tag_lst
             html_over.set_overflow()
 
-            # cancella o tag XX
+            # cancella tag XXX
             self.hb.del_tags('XXX')
 
             print("CHeck HTML")

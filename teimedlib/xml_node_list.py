@@ -7,8 +7,8 @@ import re
 from lxml import etree
 from teiprjhtmlmake import LOG
 
-__date__ = "22-03-2022"
-__version__ = "0.0.2"
+__date__ = "27-05-2022"
+__version__ = "0.0.3"
 __author__ = "Marta Materni"
 
 
@@ -157,8 +157,12 @@ class XmlNodeList:
             xml_root = etree.XML(src, parser)
             for nd in xml_root.iter():
                 x_data = self.get_node_data(nd)
+                liv = x_data.get("liv")
+                # AAA controllo sul livello < 2
+                if int(liv) < 2:
+                    continue
                 x_data_lst.append(x_data)
         except Exception as e:
-            msg = f"ERROR xml_node_data_list()\nfile:{xml_path}\n{e}"
+            msg=f"ERROR xml_node_data_list()\nfile:{xml_path}\n{e}"
             raise Exception(msg)
         return x_data_lst
