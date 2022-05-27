@@ -20,7 +20,7 @@ from teimedlib.xml_node_list import XmlNodeList
 
 
 __date__ = "27-05-2022"
-__version__ = "0.0.12"
+__version__ = "0.0.13"
 __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
@@ -37,12 +37,12 @@ log_err = Log(LOG_ERR_WA)
 inp = Inp()
 
 
-def pp(data, w=120):
+def pp(data, w=60):
     s = pprint.pformat(data, indent=2, width=w)
     return s
 
 
-def ppx(xdata, w=120):
+def ppx(xdata, w=60):
     d = {}
     for k in xdata.keys():
         if k == 'val':
@@ -61,6 +61,10 @@ class Xml2Html:
         # log_html_err.open("log/teixml2html.html.ERR.log", 1)
         # log_debug.open("log/DEBUG.log", 1)
 
+        # file di configurazione json per le variabili
+        # del progetto
+        self.html_cfg = {}
+
         self.xml_path = None
 
         # dict dei tags estratti da csv
@@ -78,6 +82,8 @@ class Xml2Html:
 
         # dizionario di x_data (dati xml) con key csv
         # utilizzato per trovare il parent come indicato in csv
+        # ATTENZONE che è popolato dinamicamente e NON all'inizio
+        # quindi il parente DEVE essere prima del figlio
         self.x_data_dict = None
 
         # stack dei nodi che sono si/no container
@@ -681,15 +687,19 @@ class Xml2Html:
             html (str): html
         Returns:
             html (str): html con settati i parametri         """
-        # params = self.html_cfg.get("html_params", {})
-        # for k, v in params.items():
-        #     html = html.replace(k, v)
+        #AAA controllo gestione parametri json
+        params = self.html_cfg.get("html_params", {})
+        for k, v in params.items():
+            html = html.replace(k, v)
+            # print(f'{k} : {v}')
 
-        s = html.replace(os.linesep, "")
-        ptrn = r"_[A-Z]+_"
-        ks = re.findall(ptrn, s)
-        for k in ks:
-            html = html.replace(k, "")
+        # s = html.replace(os.linesep, "")        
+        # ptrn = r"_[A-Z]+_"
+        # ks = re.findall(ptrn, s)
+        # ks=list(set(ks))
+        # for k in ks:
+        #     html = html.replace(k, "")
+
         html = html.replace("text_null", "")
         html = re.sub(' +', ' ', html)
         return html
@@ -841,13 +851,10 @@ class Xml2Html:
 
             # html su una riga versione per produzione
             html_one_row = self.hb.html_onerow()
-
             # setta i parametri _..._ definiti nel file <name>.json
             html_one_row = self.set_html_paramas(html_one_row)
-
             # s = "<!doctype html>"+os.linesep+html_one_row
             s = html_one_row
-
             ptu.make_dir_of_file(html_path)
             with open(html_path, write_append) as f:
                 f.write(s)
