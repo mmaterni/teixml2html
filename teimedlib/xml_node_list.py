@@ -108,7 +108,7 @@ class XmlNodeList:
         liv = self.node_liv(nd)
         tag = self.node_tag(nd)
         # evita val troppo grandi
-        if liv <  2:
+        if liv < 2:
             val = ''
         else:
             val = self.node_val(nd)
