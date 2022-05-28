@@ -833,7 +833,8 @@ class Xml2Html:
             self.hb.end()
 
             """gestisce il settaggio degli overflow
-            modifica il parametro self.hb.tag_lst,
+            modifica il parametro self.hb.tag_lst lista
+            righe html
             """
             print("Elab OverFlow")
             html_over = HtmlOvweflow(self.x_data_lst,

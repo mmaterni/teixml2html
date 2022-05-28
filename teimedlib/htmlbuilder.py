@@ -81,9 +81,13 @@ class HtmlBuilder:
     # rimuove tutte le righe che contengono tag
     def del_tags(self, tag):
         ls = []
+        empty="</>"
         for nd in self.tag_lst:
-            if nd.find(tag) < 0:
-                ls.append(nd)
+            if nd.strip() == empty:
+                continue
+            if nd.find(tag) > -1:
+                continue
+            ls.append(nd)
         self.tag_lst = ls
 
     # chiusura con ultimo tag
@@ -98,7 +102,7 @@ class HtmlBuilder:
     # ultimi n  tag
     def node_lst_last(self, n):
         x = min(n, len(self.tag_lst))
-        s=os.linesep.join(self.tag_lst[-x:])
+        s = os.linesep.join(self.tag_lst[-x:])
         return s
 
     # lista dei tag
