@@ -146,31 +146,8 @@ class XmlNodeList:
             raise Exception(msg)
         return nd_lst
 
-    # def lb2l(self, xml_path):
-    #     with open(xml_path, "r") as f:
-    #         rows = f.readlines()
-    #     lb_idxs = []
-    #     end_idx = 0
-    #     for i, row in enumerate(rows):
-    #         if row.find("<lb/>") > -1:
-    #             lb_idxs.append(i)
-    #         if row.find("</w>")>-1:
-    #             end_idx = i
-    #         if row.find("</pc>")>-1:
-    #             end_idx = i
-
-    #     i = lb_idxs[0]
-    #     rows[i] = rows[i].replace("<lb/>", "<l>")
-    #     for i in lb_idxs[1:]:
-    #         rows[i] = rows[i].replace("<lb/>", "</l><l>")
-    #     rows[end_idx] = rows[end_idx].strip()+"</l>\n"
-
-    #     src = "".join(rows)
-    #     open("pippo.xml", "w").write(src)
-    #     return src
 
     def xml_node_data_list(self, xml_path):
-        # src=self.lb2l(xml_path)
         x_data_lst = []
         try:
             src = open(xml_path, "r").read()
@@ -182,7 +159,7 @@ class XmlNodeList:
             for nd in xml_root.iter():
                 x_data = self.get_node_data(nd)
                 liv = x_data.get("liv")
-                # AAA controllo sul livello < 2
+                # TODO  controllo sul livello < 2
                 if liv < 2:
                     continue
                 x_data_lst.append(x_data)

@@ -87,7 +87,7 @@ class Xml2Html:
         self.x_data_dict = None
 
         # stack dei nodi che sono si/no container
-        # FIXME verificare funzionamento
+        # TODO verificare funzionamento
         self.is_container_stack = [False for i in range(1, 20)]
 
         # tag di controllo per erroi csv _x_ _xy_
@@ -310,7 +310,7 @@ class Xml2Html:
         ls = []
         for k in ks:
             v = attrs[k]
-            # AAA if k == 'id': aggiunto from to
+            # if k == 'id': aggiunto from to
             if k in ['id', 'from', 'to']:
                 v = f'{self.before_id}{v}'
             s = f'{k}="{v}"'
@@ -462,7 +462,7 @@ class Xml2Html:
         # if self.trace:
         #     set_trace()
 
-        # FIXME verificare quando è settato container
+        # TODO verificare quando è settato container
         self.is_container_stack[x_liv] = False
 
         c_data = self. get_data_row_html_csv(x_data)
@@ -620,7 +620,7 @@ class Xml2Html:
         h_tail = h_data['tail']
         h_attrs = h_data['attrs']
 
-        # FIXME se il precedente è un parent contenitor
+        # TODO se il precedente è un parent contenitor
         prev_is_container = self.is_container_stack[x_liv-1]
         if prev_is_container:
             set_trace()  #
@@ -655,7 +655,8 @@ class Xml2Html:
         # print(h_attrs)
         # print(h_text)
         # print(h_tail)
-        #FIXME salta i tag senza attrs
+
+        #TODO salta i tag senza attrs ??
         # if h_attrs.strip()=="":
         #     h_tag="XXX"
 
@@ -687,7 +688,7 @@ class Xml2Html:
             html (str): html
         Returns:
             html (str): html con settati i parametri         """
-        #AAA controllo gestione parametri json
+        #controllo gestione parametri json
         params = self.html_cfg.get("html_params", {})
         for k, v in params.items():
             html = html.replace(k, v)
