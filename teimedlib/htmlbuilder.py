@@ -78,7 +78,7 @@ class HtmlBuilder:
             self.tag_lst.append(t)
         return True
 
-    # rimuove tutte le righe che contengono tag
+    # TODO rimuove tutte le righe che contengono tag
     def del_tags(self, tag):
         ls = []
         for nd in self.tag_lst:
@@ -87,7 +87,9 @@ class HtmlBuilder:
             if nd.strip == "</>":
                 continue
             if nd.find("<>") > -1:
-                nd = nd.replace("<>", "").replace("</>", "")
+                nd = nd.replace("<>", "")
+            if nd.find("</>") > -1:
+                nd = nd.replace("</>", "")
             ls.append(nd)
         self.tag_lst = ls
 

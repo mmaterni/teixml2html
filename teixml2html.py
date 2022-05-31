@@ -656,7 +656,7 @@ class Xml2Html:
         # print(h_text)
         # print(h_tail)
 
-        #TODO salta i tag senza attrs ??
+        # TODO salta i tag senza attrs ??
         # if h_attrs.strip()=="":
         #     h_tag="XXX"
 
@@ -688,13 +688,13 @@ class Xml2Html:
             html (str): html
         Returns:
             html (str): html con settati i parametri         """
-        #controllo gestione parametri json
+        # controllo gestione parametri json
         params = self.html_cfg.get("html_params", {})
         for k, v in params.items():
             html = html.replace(k, v)
             # print(f'{k} : {v}')
 
-        # s = html.replace(os.linesep, "")        
+        # s = html.replace(os.linesep, "")
         # ptrn = r"_[A-Z]+_"
         # ks = re.findall(ptrn, s)
         # ks=list(set(ks))
@@ -833,6 +833,7 @@ class Xml2Html:
             # chiude HTML con i tag ancora aperti
             self.hb.end()
 
+
             """gestisce il settaggio degli overflow
             modifica il parametro self.hb.tag_lst lista
             righe html
@@ -846,6 +847,13 @@ class Xml2Html:
 
             # cancella tag XXX
             self.hb.del_tags('XXX')
+
+            # for item in self.hb.tag_lst:
+            #     if item.find("</>") > -1:
+            #         print(item)
+            #     if item.find("<>") > -1:
+            #         print(item)
+
 
             print("CHeck HTML")
             # controllo dei parametri %par% non settati
