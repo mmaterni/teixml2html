@@ -9,7 +9,7 @@ import sys
 import re
 
 
-def pp(data,w=40):
+def pp(data, w=40):
     if data is None:
         return ""
     return pprint.pformat(data, indent=2, width=w)
@@ -32,6 +32,9 @@ TEXT_START = 'txt_start'
 TEXT_END = 'txt_end'
 CSS_START = 'css_start'
 CSS_END = 'css_end'
+#CSS_FIRST_UP_LIST = ['directspeech_first_int', 'monologue_first_int']
+# CSS_FIRST_UP_LIST = ['directspeech_first_int']
+CSS_FIRST_UP_LIST = ['monologue_first_int']
 
 
 class HtmlOvweflow:
@@ -57,6 +60,49 @@ class HtmlOvweflow:
         self.class_w = 'class="w'
         self.class_pc = 'class="pc'
         self.trace = False
+
+    def capitalize_first(self):
+        """capitaliza 
+        directspeech_first_int 
+        monologue _first_int
+        """
+        row_last = len(self.html_lst)
+        ptrn = re.compile(r"[a-z]")
+
+        def find_text(j):
+           for i in range(j, row_last):
+                try:
+                    row = self.html_lst[i]
+                    # print(row.strip())
+                    pr = row.find('>')
+                    pl = row.find("</", pr)
+                    if pl > -1:
+                        pw = ptrn.search(row, pr)
+                        if pw is not None:
+                            a = pw.start()
+                            b = pw.end()
+                            s = row[a:b]
+                            # print(a,b,s)
+                            # print(row[:a])
+                            # print(row[b:])
+                            s = row[:a]+row[a].upper()+row[b:]
+                            # print(s.strip())
+                            # input("?")
+                            self.html_lst[i] = s
+                            break
+                    if row.find("</div>") > -1:
+                        break
+                except IndexError as e:
+                    self.logerr.log("ERROR. capitalize_first() ")
+                    self.logerr.log(e)
+                    self.logerr.log(row)
+                    # sys.exit(1)
+
+        for clazz in CSS_FIRST_UP_LIST:
+            for i in range(0, row_last):
+                row = self.html_lst[i]
+                if row.find(clazz) > -1:
+                    find_text(i)
 
     def fill_span_list(self):
         for x_data in self.xml_lst:
@@ -142,14 +188,12 @@ class HtmlOvweflow:
                     c_text = self.text_format(c_text, [], {})
             if css_class.find('%') > -1:
                 if flag == 0:
-                    css_class = self.text_format(
-                        css_class, [CSS_START], c_params)
+                    css_class = self.text_format(css_class, [CSS_START], c_params)
                 elif flag == 2:
-                    css_class = self.text_format(
-                        css_class, [CSS_END], c_params)
+                    css_class = self.text_format(css_class, [CSS_END], c_params)
                 else:
                     css_class = self.text_format(css_class, [], {})
-            #
+
             p0 = html_row.find(self.class_w)
             if p0 > -1:
                 p0 = p0+len(self.class_w)
@@ -161,7 +205,9 @@ class HtmlOvweflow:
                 raise Exception("ERROR in html not found tag w or pc")
             p1 = html_row.find('"', p0)
             s = html_row[0:p1]+" "+css_class+html_row[p1:]
+
             # aggiunge eventuale testo a inizio e fine
+            # utilizzato per directspeech e monologue
             if c_text != '':
                 if flag == 0:
                     s = s.replace('>', f'>{c_text}', 1)
@@ -177,19 +223,6 @@ class HtmlOvweflow:
             self.logerr.log(html_row)
             sys.exit(1)
 
-    # def find_w_id(self, r, id):
-    #     ptr_id = f'{id}"'
-    #     p = r.find(ptr_id)
-    #     return p > -1
-
-    # def find_w_pc(self, rh):
-    #     """verifica se il tag è w o pc
-    #     """
-    #     p = rh.find(self.class_w)
-    #     if p < 0:
-    #         p = rh.find(self.class_pc)
-    #     return p > -1
-
     def set_html(self, from_to):
         """setta le righe html comprese nellìintervallo from to
         Args:
@@ -202,13 +235,10 @@ class HtmlOvweflow:
             return p > -1
 
         def find_w_pc(rh):
-            """verifica se il tag è w o pc
-            """
             p = rh.find(self.class_w)
             if p < 0:
                 p = rh.find(self.class_pc)
             return p > -1
-
 
         id_from = from_to['id0']
         id_to = from_to['id1']
@@ -247,3 +277,4 @@ class HtmlOvweflow:
         self.fill_span_list()
         for x_data in self.span_lst:
             self.set_html(x_data)
+        self.capitalize_first()
