@@ -19,8 +19,8 @@ import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "27-05-2022"
-__version__ = "0.0.13"
+__date__ = "02-09-2022"
+__version__ = "0.0.14"
 __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
@@ -844,6 +844,9 @@ class Xml2Html:
                                      self.html_tag_dict)
             # setta self.hb.tag_lst
             html_over.set_overflow()
+
+            #rimuove le righe <span  class="from_to" ..
+            self.hb.remove_from_to()
 
             # cancella tag XXX
             self.hb.del_tags('XXX')

@@ -2,17 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from pdb import set_trace
-
 from teimedlib.ualog import Log
-import pprint
 import sys
 import re
-
-
-def pp(data, w=40):
-    if data is None:
-        return ""
-    return pprint.pformat(data, indent=2, width=w)
 
 
 """
@@ -32,9 +24,9 @@ TEXT_START = 'txt_start'
 TEXT_END = 'txt_end'
 CSS_START = 'css_start'
 CSS_END = 'css_end'
-#CSS_FIRST_UP_LIST = ['directspeech_first_int', 'monologue_first_int']
-# CSS_FIRST_UP_LIST = ['directspeech_first_int']
-CSS_FIRST_UP_LIST = ['monologue_first_int']
+CSS_FIRST_UP_LIST = ['directspeech_first_int', 'monologue_first_int']
+#CSS_FIRST_UP_LIST = ['directspeech_first_int']
+#CSS_FIRST_UP_LIST = ['monologue_first_int']
 
 
 class HtmlOvweflow:
@@ -70,7 +62,7 @@ class HtmlOvweflow:
         ptrn = re.compile(r"[a-z]")
 
         def find_text(j):
-           for i in range(j, row_last):
+            for i in range(j, row_last):
                 try:
                     row = self.html_lst[i]
                     # print(row.strip())

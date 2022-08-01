@@ -127,3 +127,15 @@ class HtmlBuilder:
         ls = [x.strip() for x in self.tag_lst]
         s = "".join(ls)
         return s
+
+    def remove_from_to(self):
+        """rimuove le righe from .. to .. 
+        <span class="from_to" from="K1ch3p1w17" to="K1ch3p1w18" type="agglutination_uncert" />
+        """
+        lst = []
+        for row in self.tag_lst:
+            if p := row.find("from_to") > 0:
+                if row.find("from", p+4) > 0:
+                    continue
+            lst.append(row)
+        self.tag_lst=lst
