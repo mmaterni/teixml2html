@@ -854,7 +854,6 @@ class Xml2Html:
             #     if item.find("<>") > -1:
             #         print(item)
 
-
             print("CHeck HTML")
             # controllo dei parametri %par% non settati
             self.check_html()

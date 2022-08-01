@@ -177,24 +177,39 @@ class HtmlOvweflow:
             self.logerr.log(html_row)
             sys.exit(1)
 
-    def find_w_id(self, r, id):
-        ptr_id = f'{id}"'
-        p = r.find(ptr_id)
-        return p > -1
+    # def find_w_id(self, r, id):
+    #     ptr_id = f'{id}"'
+    #     p = r.find(ptr_id)
+    #     return p > -1
 
-    def find_w_pc(self, rh):
-        """verifica se il tag è w o pc
-        """
-        p = rh.find(self.class_w)
-        if p < 0:
-            p = rh.find(self.class_pc)
-        return p > -1
+    # def find_w_pc(self, rh):
+    #     """verifica se il tag è w o pc
+    #     """
+    #     p = rh.find(self.class_w)
+    #     if p < 0:
+    #         p = rh.find(self.class_pc)
+    #     return p > -1
 
     def set_html(self, from_to):
         """setta le righe html comprese nellìintervallo from to
         Args:
             from_to (str): intervallo degli id delle classi w e pc
         """
+
+        def find_w_id(r, id):
+            ptr_id = f'{id}"'
+            p = r.find(ptr_id)
+            return p > -1
+
+        def find_w_pc(rh):
+            """verifica se il tag è w o pc
+            """
+            p = rh.find(self.class_w)
+            if p < 0:
+                p = rh.find(self.class_pc)
+            return p > -1
+
+
         id_from = from_to['id0']
         id_to = from_to['id1']
         span_type = from_to['type']
@@ -202,9 +217,9 @@ class HtmlOvweflow:
         for i, html_row in enumerate(self.html_lst):
             if flag == 0:
                 # verifica se è  word o pc
-                if self.find_w_pc(html_row):
+                if find_w_pc(html_row):
                     # cerca nella riga id_form
-                    if self.find_w_id(html_row, id_from):
+                    if find_w_id(html_row, id_from):
                         # setta come inizio (flga=0)
                         row = self.add_html_class(0, html_row, span_type)
                         self.html_lst[i] = row
@@ -212,9 +227,9 @@ class HtmlOvweflow:
                         continue
             if flag == 1:
                 # verifica se è  word o pc
-                if self.find_w_pc(html_row):
+                if find_w_pc(html_row):
                     # cerca nella riga id_to
-                    if self.find_w_id(html_row, id_to):
+                    if find_w_id(html_row, id_to):
                         # setta word o pc com fine (flag=2)
                         row = self.add_html_class(2, html_row, span_type)
                         self.html_lst[i] = row
