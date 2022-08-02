@@ -200,6 +200,13 @@ class HtmlOvweflow:
 
             # aggiunge eventuale testo a inizio e fine
             # utilizzato per directspeech e monologue
+
+            #  <div class="w directspeech_int" id="xK1ch9p1w443">dure»
+            #      <span class="abrev_int">m
+            #          <span class="ex">en</span>t
+            #      </span>
+            #  </div>
+
             if c_text != '':
                 if flag == 0:
                     s = s.replace('>', f'>{c_text}', 1)

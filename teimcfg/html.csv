@@ -192,10 +192,11 @@ x|supplied+damage+no|span||class:supplied_dn
 x|xml_tag|*** GESTIONE OWERFLOW  ***
 
 d|directspeech|||class:directspeech|%txt_start%%txt_end%|txt_start:«,txt_end:»
-i|directspeech|||class:directspeech%css_start%_int|%txt_start%%txt_end%|txt_start:«,txt_end:»,css_start:_first
+#AAAi|directspeech|||class:directspeech%css_start%_int|%txt_start%%txt_end%|txt_start:«,txt_end:»,css_start:_first
+i|directspeech|||class:directspeech%css_start%%css_end%_int|%txt_start%%txt_end%|txt_start:«,txt_end:»,css_start:_first,css_end:_last
 
 d|monologue|||class:monologue|%txt_start%%txt_end%|txt_start:_QA_,txt_end:_QC_
-i|monologue|||class:tei_monologue%css_start%_int|%txt_start%%txt_end%|txt_start:_QA_,txt_end:_QC_,css_start:_first
+i|monologue|||class:monologue%css_start%_int|%txt_start%%txt_end%|txt_start:_QA_,txt_end:_QC_,css_start:_first
 
 d|agglutination|||class:aggl%css_end%||css_end:_last
 i|agglutination|||class:aggl_int
