@@ -134,7 +134,7 @@ class HtmlOvweflow:
         for k in keys:
             v = pars.get(k, '')
             params[k] = v
-        #
+        
         ptrn = r"%[\w/,;:.?!^-]+%"
         ms = re.findall(ptrn, text)
         ks = [x.replace('%', '') for x in ms]
@@ -171,6 +171,7 @@ class HtmlOvweflow:
             css_class = c_attrs.get('class', "css_err")
             c_text = c_data.get('text', "")
             c_params = c_data.get('params', {})
+            #FIXME TEXT_START e TEXT_END probabilmente INUILI testare
             if c_text.find('%') > -1:
                 if flag == 0:
                     c_text = self.text_format(c_text, [TEXT_START], c_params)
@@ -198,15 +199,8 @@ class HtmlOvweflow:
             p1 = html_row.find('"', p0)
             s = html_row[0:p1]+" "+css_class+html_row[p1:]
 
-            # aggiunge eventuale testo a inizio e fine
+            # FIXME IUTILE aggiunge eventuale testo a inizio e fine
             # utilizzato per directspeech e monologue
-
-            #  <div class="w directspeech_int" id="xK1ch9p1w443">dure»
-            #      <span class="abrev_int">m
-            #          <span class="ex">en</span>t
-            #      </span>
-            #  </div>
-
             if c_text != '':
                 if flag == 0:
                     s = s.replace('>', f'>{c_text}', 1)
