@@ -19,8 +19,8 @@ import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "02-09-2022"
-__version__ = "0.0.14"
+__date__ = "08-08-2022"
+__version__ = "0.0.15"
 __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
@@ -803,6 +803,7 @@ class Xml2Html:
             html_path (str): filr name html 
         """
         try:
+            print(f"\n{xml_path}\n{conf_path}")
             # debug_liv = 2
             inp.set_liv(debug_liv)
             self.x_data_lst = []
@@ -833,12 +834,11 @@ class Xml2Html:
             # chiude HTML con i tag ancora aperti
             self.hb.end()
 
-
             """gestisce il settaggio degli overflow
             modifica il parametro self.hb.tag_lst lista
             righe html
             """
-            print("Elab OverFlow")
+            print("Elab OverFlow ")
             html_over = HtmlOvweflow(self.x_data_lst,
                                      self.hb.tag_lst,
                                      self.html_tag_dict)
