@@ -95,6 +95,9 @@ class Xml2Html:
 
         self.w_liv = 0
 
+        # true dop aver incontrato un pc
+        self.upper_after_pc = False  # AAA
+
         # flag per gestione set_trace()
         self.trace = False
 
@@ -565,7 +568,7 @@ class Xml2Html:
         return html_data
 
     # verifica se . ! ? da seguire con una maiuscola
-    def is_pc_to_up(self, x_data):
+    # def is_pc_to_up(self, x_data):
         x_tag = x_data['tag']
         pc_active = False
         if self.w_liv == 0 and x_tag == 'w':
@@ -577,7 +580,7 @@ class Xml2Html:
         return pc_active
 
     # gestione delle maiuscole dopo un . ! ?
-    def after_pc(self, x_data, h_data, text, tail):
+    # def after_pc(self, x_data, h_data, text, tail):
         x_liv = x_data['liv']
         x_tag = x_data['tag']
         if x_tag == 'w':
@@ -586,9 +589,10 @@ class Xml2Html:
                 text = text.capitalize()
                 self.w_liv = 100
         h_tag = h_data['tag']
+        # print(self.w_liv,x_liv,x_tag,h_tag)
         if x_liv > self.w_liv and h_tag != 'XXX':
             if text.strip() != '':
-                # text='X'+text
+                # text='X'+text #FIXME Maiuscole dopo il punto
                 text = text.capitalize()
                 self.w_liv = 100
             elif tail.strip() != '':
@@ -620,7 +624,7 @@ class Xml2Html:
         h_tail = h_data['tail']
         h_attrs = h_data['attrs']
 
-        # TODO se il precedente è un parent contenitor
+        # FIXME se il precedente è un parent contenitor
         prev_is_container = self.is_container_stack[x_liv-1]
         if prev_is_container:
             set_trace()  #
@@ -629,16 +633,26 @@ class Xml2Html:
             s = self.hb.node_last()
             content = s.replace('%text%', content)
             self.hb.upd_tag_last(content)
-            # setta con XXX perrimuovere da aggiungere in quanto
+            # setta con XXX per rimuovere TAG
+            # da settare in quanto
             # è stato inserito nel contente del parent
             h_tag = 'XXX'
 
         # gestione interpretativa
         if self.dipl_inter == 'i':
-            h_text = h_text.lower()
-            h_tail = h_tail.lower()
-            if self.is_pc_to_up(x_data):
-                h_text, h_tail = self.after_pc(x_data, h_data, h_text, h_tail)
+            h_text = h_text.lower().strip()
+            h_tail = h_tail.lower().strip()
+            #FIXME gestione miucole dopo il punto
+            # if self.upper_after_pc:
+            #     print(h_text+h_tail+x_data['tag'])
+            #     if h_text+h_tail != '':
+            #         input("?")
+            #         # print(h_text+h_tail)
+            #         h_text, h_tail = self.after_pc(x_data, h_data, h_text, h_tail)
+            #         # print(h_text+h_tail)
+            #         # print("\n")
+            #         self.upper_after_pc = False
+            # self.upper_after_pc = self.is_pc_to_up(x_data)
 
         # popola self.hb
         if h_tag is None:
@@ -845,7 +859,7 @@ class Xml2Html:
             # setta self.hb.tag_lst
             html_over.set_overflow()
 
-            #rimuove le righe <span  class="from_to" ..
+            # rimuove le righe <span  class="from_to" ..
             self.hb.remove_from_to()
 
             # cancella tag XXX
