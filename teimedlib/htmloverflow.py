@@ -24,9 +24,9 @@ TEXT_START = 'txt_start'
 TEXT_END = 'txt_end'
 CSS_START = 'css_start'
 CSS_END = 'css_end'
-CSS_FIRST_UP_LIST = ['directspeech_first_int', 'monologue_first_int']
-#CSS_FIRST_UP_LIST = ['directspeech_first_int']
-#CSS_FIRST_UP_LIST = ['monologue_first_int']
+CSS_FIRST_UP_DIRECT_LIST = ['directspeech_first_int', 'monologue_first_int']
+#CSS_FIRST_UP_DIRECT_LIST = ['directspeech_first_int']
+#CSS_FIRST_UP_DIRECT_LIST = ['monologue_first_int']
 
 
 class HtmlOvweflow:
@@ -51,9 +51,10 @@ class HtmlOvweflow:
         self.span_lst = []
         self.class_w = 'class="w'
         self.class_pc = 'class="pc'
+        self.old_w_pc=None
         self.trace = False
 
-    def capitalize_first(self):
+    def capitalize_first_direct(self):
         """capitaliza 
         directspeech_first_int 
         monologue _first_int
@@ -85,12 +86,12 @@ class HtmlOvweflow:
                     if row.find("</div>") > -1:
                         break
                 except IndexError as e:
-                    self.logerr.log("ERROR. capitalize_first() ")
+                    self.logerr.log("ERROR. capitalize_first_direct() ")
                     self.logerr.log(e)
                     self.logerr.log(row)
                     # sys.exit(1)
 
-        for clazz in CSS_FIRST_UP_LIST:
+        for clazz in CSS_FIRST_UP_DIRECT_LIST:
             for i in range(0, row_last):
                 row = self.html_lst[i]
                 if row.find(clazz) > -1:
@@ -134,7 +135,7 @@ class HtmlOvweflow:
         for k in keys:
             v = pars.get(k, '')
             params[k] = v
-        
+
         ptrn = r"%[\w/,;:.?!^-]+%"
         ms = re.findall(ptrn, text)
         ks = [x.replace('%', '') for x in ms]
@@ -167,11 +168,13 @@ class HtmlOvweflow:
             if c_data is None:
                 raise Exception(
                     f"attr_type:{span_type} ERROR csv row not found ")
+           
             c_attrs = c_data.get('attrs', {})
             css_class = c_attrs.get('class', "css_err")
             c_text = c_data.get('text', "")
             c_params = c_data.get('params', {})
-            #FIXME TEXT_START e TEXT_END probabilmente INUILI testare
+
+            # FIXME TEXT_START e TEXT_END probabilmente INUILI testare
             if c_text.find('%') > -1:
                 if flag == 0:
                     c_text = self.text_format(c_text, [TEXT_START], c_params)
@@ -179,6 +182,7 @@ class HtmlOvweflow:
                     c_text = self.text_format(c_text, [TEXT_END], c_params)
                 else:
                     c_text = self.text_format(c_text, [], {})
+           
             if css_class.find('%') > -1:
                 if flag == 0:
                     css_class = self.text_format(css_class, [CSS_START], c_params)
@@ -194,8 +198,10 @@ class HtmlOvweflow:
                 p0 = html_row.find(self.class_pc)
                 if p0 > -1:
                     p0 = p0+len(self.class_pc)
+           
             if p0 < 0:
                 raise Exception("ERROR in html not found tag w or pc")
+           
             p1 = html_row.find('"', p0)
             s = html_row[0:p1]+" "+css_class+html_row[p1:]
 
@@ -211,7 +217,7 @@ class HtmlOvweflow:
                         s = f'{s}{c_text}'
             return s
         except Exception as e:
-            self.logerr.log("ERROR. add_html_class() ")
+            self.logerr.log("ERROR add_html_class() ")
             self.logerr.log(e)
             self.logerr.log(html_row)
             sys.exit(1)
@@ -222,12 +228,12 @@ class HtmlOvweflow:
             from_to (str): intervallo degli id delle classi w e pc
         """
 
-        def find_w_id(r, id):
+        def find_node_id(r, id):
             ptr_id = f'{id}"'
             p = r.find(ptr_id)
             return p > -1
 
-        def find_w_pc(rh):
+        def is_class_ok(rh):
             p = rh.find(self.class_w)
             if p < 0:
                 p = rh.find(self.class_pc)
@@ -238,21 +244,23 @@ class HtmlOvweflow:
         span_type = from_to['type']
         flag = 0
         for i, html_row in enumerate(self.html_lst):
+
             if flag == 0:
                 # verifica se è  word o pc
-                if find_w_pc(html_row):
+                if is_class_ok(html_row):
                     # cerca nella riga id_form
-                    if find_w_id(html_row, id_from):
+                    if find_node_id(html_row, id_from):
                         # setta come inizio (flga=0)
                         row = self.add_html_class(0, html_row, span_type)
                         self.html_lst[i] = row
                         flag = 1
                         continue
+
             if flag == 1:
                 # verifica se è  word o pc
-                if find_w_pc(html_row):
+                if is_class_ok(html_row):
                     # cerca nella riga id_to
-                    if find_w_id(html_row, id_to):
+                    if find_node_id(html_row, id_to):
                         # setta word o pc com fine (flag=2)
                         row = self.add_html_class(2, html_row, span_type)
                         self.html_lst[i] = row
@@ -261,6 +269,7 @@ class HtmlOvweflow:
                     # setta word o pc nell'intervallo (flag==1)
                     row = self.add_html_class(1, html_row, span_type)
                     self.html_lst[i] = row
+
         if flag == 0:
             # errroe nlla gestione inizio gine
             self.logerr.log("ERROR. set_html()")
@@ -270,4 +279,4 @@ class HtmlOvweflow:
         self.fill_span_list()
         for x_data in self.span_lst:
             self.set_html(x_data)
-        self.capitalize_first()
+        self.capitalize_first_direct()

@@ -19,7 +19,7 @@ import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
 
 
-__date__ = "08-08-2022"
+__date__ = "09-08-2022"
 __version__ = "0.0.15"
 __author__ = "Marta Materni"
 
@@ -96,7 +96,7 @@ class Xml2Html:
         self.w_liv = 0
 
         # true dop aver incontrato un pc
-        self.upper_after_pc = False  # AAA
+        # self.upper_after_pc = False  # AAA
 
         # flag per gestione set_trace()
         self.trace = False
@@ -886,7 +886,7 @@ class Xml2Html:
                 f.write(s)
 
             # file html formattato per controll9
-            print("CHeck HTML FORMAT")
+            print("HTML Format")
             html_format = self.hb.html_format()
             html_format = self.set_html_paramas(html_format)
             # s = "<!doctype html>"+os.linesep+html_format
