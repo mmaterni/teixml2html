@@ -54,10 +54,11 @@ class HtmlBuilder:
             tag_child = f'</{ts[1]}>'
         else:
             tag_child = ""
-        if text != '':
+        if text != '': 
             t = f'{sp}<{tag}{b}{attrs}>{text}{tag_child}</{tag}>{tail}'
         else:
-            t = f'{sp}<{tag}{b}{attrs}/>{tail}'
+            #TODO t = f'{sp}<{tag}{b}{attrs}/>{tail}'
+            t = f'{sp}<{tag}{b}{attrs}></{tag}>{tail}'
         self.tag_lst.append(t)
         return self
 
