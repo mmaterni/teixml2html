@@ -2,7 +2,7 @@
 file delle entity HTML
 ========================================
 
-type|xml_tag|tag|keys|attrs|text|par1ams|par1ent
+type|xml_tag|tag|keys|attrs|text|par1ams|parent
 
 type selettore della tipologia
   x   per tutti i tipi
@@ -98,8 +98,6 @@ lsk       : ['rend','hand]
 lsv       : ['trans']
 attrs_val : trans
 csv_tag   : del+trans (tag effettivo)
-
-
 
 
 ====================================

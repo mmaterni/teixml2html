@@ -96,7 +96,7 @@ class Xml2Html:
         self.w_liv = 0
 
         # true dop aver incontrato un pc
-        # self.upper_after_pc = False  # AAA
+        # TODO self.upper_after_pc = False
 
         # flag per gestione set_trace()
         self.trace = False
@@ -106,9 +106,9 @@ class Xml2Html:
     def set_x_items(self, src, x_items):
         """setta un testo parametrizzato con x_items:
         i parametri del testo sono nella forma
-        %param% nel cso di parametr %tag_paren@ù+param%
+        %param% nel cso di parametr %tag_paren@param%
         tag_parent estrae da x_data_dict x_data
-        memorizzato con il tag pag_arente e pren x_items
+        memorizzato con il tag tag_parente e prende x_items
         NB.
         I parametri  non settati restano nella forma originale
         Args:
@@ -156,7 +156,8 @@ class Xml2Html:
         return src
 
     def sett_c_params(self, src, c_params):
-        """settta pars su src
+        """
+        settta pars su src
         vengono consiserati tutti gli elemnti di text dell
         pattern [%][w.?!+][%] e sono rimpiazzati utilizando il dict pars
         NB.
@@ -208,7 +209,8 @@ class Xml2Html:
         return text
 
     def set_text_in_html_attr(self, html_attrs, x_text):
-        """sostuiuisce i parametri %text% in html_attrs
+        """
+        sostuiuisce i parametri %text% in html_attrs
         con x_text estratto da x_data
         il simbolo @ serve ad indicare una diversa riga
         da cui predere il parametro.
@@ -250,7 +252,8 @@ class Xml2Html:
         return html_attrs
 
     def set_text_in_c_text(self, c_text, x_text):
-        """sostuiuisce i parametri %text% in c_text
+        """
+        sostuiuisce i parametri %text% in c_text
         con x_text estratto da x_data
         il simbolo @ serve ad indicare una diversa riga
         da cui predere il parametro.
@@ -340,18 +343,19 @@ class Xml2Html:
         return html_attrs
 
     def get_data_row_html_csv(self, x_data):
-        """ ritorna dati della row di <tag>.csv individuata
-            dall tag o tag+attr di x_data definita in xml_data_dict
-            la key è quella ottenuta dal tag xml
-            e l'eventuale/i attributo
+        """ 
+        ritorna dati della row di <tag>.csv individuata
+        dall tag o tag+attr di x_data definita in xml_data_dict
+        la key è quella ottenuta dal tag xml
+        e l'eventuale/i attributo
 
-            x|xml_tag|tag|keys|attrs|text|params|parent
+        x|xml_tag|tag|keys|attrs|text|params|parent
 
-            se per xml_tag row_data is None
-              csv_tag_ctrl="_x_"+csv_tag
-              csv_tag=xml_tag
-           se xml_tag è complessa (tag + attrs) e tag is None
-              csv_tag_ctrl="_xy_"+csv_tag
+        se per xml_tag row_data is None
+          csv_tag_ctrl="_x_"+csv_tag
+          csv_tag=xml_tag
+        se xml_tag è complessa (tag + attrs) e tag is None
+          csv_tag_ctrl="_xy_"+csv_tag
         Args:
             x_data (dict):xml data
         Returns:
@@ -458,10 +462,6 @@ class Xml2Html:
         # if x_data['text'].find("AAA")> -1:
         #     self.trace=True
         #     pass
-        # if x_data['text'].find("BBB")> -1:
-        #     self.trace=True
-        #     pass
-
         # if self.trace:
         #     set_trace()
 
@@ -477,7 +477,6 @@ class Xml2Html:
         c_params = c_data.get('params', {})
         # x_items selezionati da c_keys + c_attrs
         html_attrs = self.build_html_attrs(x_items, c_keys, c_attrs)
-
         lg = 0
         log_info.log("---------------------------").prn(lg)
         log_info.log(f"{row_num})")
@@ -488,7 +487,6 @@ class Xml2Html:
         log_info.log(pp(c_data)).prn(lg)
         log_info.log(">>1) html_attrs:").prn(lg)
         log_info.log(html_attrs).prn(lg)
-        # set_trace()
         # sostituzioni
         if html_attrs.find('%') > -1:
             # sostituisce %text% con x_data['text']
@@ -569,37 +567,38 @@ class Xml2Html:
 
     # verifica se . ! ? da seguire con una maiuscola
     # def is_pc_to_up(self, x_data):
-        x_tag = x_data['tag']
-        pc_active = False
-        if self.w_liv == 0 and x_tag == 'w':
-            self.w_liv = x_data['liv']
-        if x_tag == 'pc':
-            t = x_data['text'].strip()
-            if t in ['.', '?', '!']:
-                pc_active = True
-        return pc_active
+    # TODO veificare il codice successivo se inutile
+        # x_tag = x_data['tag']
+        # pc_active = False
+        # if self.w_liv == 0 and x_tag == 'w':
+        #     self.w_liv = x_data['liv']
+        # if x_tag == 'pc':
+        #     t = x_data['text'].strip()
+        #     if t in ['.', '?', '!']:
+        #         pc_active = True
+        # return pc_active
 
     # gestione delle maiuscole dopo un . ! ?
     # def after_pc(self, x_data, h_data, text, tail):
-        x_liv = x_data['liv']
-        x_tag = x_data['tag']
-        if x_tag == 'w':
-            self.w_liv = x_liv
-            if text.strip() != '':
-                text = text.capitalize()
-                self.w_liv = 100
-        h_tag = h_data['tag']
-        # print(self.w_liv,x_liv,x_tag,h_tag)
-        if x_liv > self.w_liv and h_tag != 'XXX':
-            if text.strip() != '':
-                # text='X'+text #FIXME Maiuscole dopo il punto
-                text = text.capitalize()
-                self.w_liv = 100
-            elif tail.strip() != '':
-                tail = 'Y'+tail
-                # tail=tail.capitalize()
-                self.w_liv = 100
-        return text, tail
+        # x_liv = x_data['liv']
+        # x_tag = x_data['tag']
+        # if x_tag == 'w':
+        #     self.w_liv = x_liv
+        #     if text.strip() != '':
+        #         text = text.capitalize()
+        #         self.w_liv = 100
+        # h_tag = h_data['tag']
+        # # print(self.w_liv,x_liv,x_tag,h_tag)
+        # if x_liv > self.w_liv and h_tag != 'XXX':
+        #     if text.strip() != '':
+        #         # text='X'+text #FIXME Maiuscole dopo il punto
+        #         text = text.capitalize()
+        #         self.w_liv = 100
+        #     elif tail.strip() != '':
+        #         tail = 'Y'+tail
+        #         # tail=tail.capitalize()
+        #         self.w_liv = 100
+        # return text, tail
 
     def apped_html_data(self, row_num, x_data):
         """
@@ -627,7 +626,7 @@ class Xml2Html:
         # FIXME se il precedente è un parent contenitor
         prev_is_container = self.is_container_stack[x_liv-1]
         if prev_is_container:
-            set_trace()  #
+            set_trace()  # XXX
             # rimpiazza text nel tag precdente (il container)
             content = f'<{h_tag} {h_attrs}>{h_text}</{h_tag}>{h_tail}'
             s = self.hb.node_last()
@@ -642,7 +641,7 @@ class Xml2Html:
         if self.dipl_inter == 'i':
             h_text = h_text.lower().strip()
             h_tail = h_tail.lower().strip()
-            #FIXME gestione miucole dopo il punto
+            # FIXME gestione miucole dopo il punto
             # if self.upper_after_pc:
             #     print(h_text+h_tail+x_data['tag'])
             #     if h_text+h_tail != '':
@@ -731,7 +730,7 @@ class Xml2Html:
         for i, row in enumerate(lst):
             ms = re.search(ptrn, row)
             if not ms is None:
-                log_err.log(f"ERROR check_tml()")
+                log_err.log(f"ERROR check_html()")
                 log_err.log(f"parametro: {ms.group()}")
                 log_err.log(f"row: {i+1}")
                 log_err.log(row.strip())
@@ -752,7 +751,7 @@ class Xml2Html:
             ms = re.search(ptrn, row)
             if not ms is None:
                 if n == 0:
-                    log_err.log(f"ERROR check_tml_format()")
+                    log_err.log(f"ERROR check_html_format()")
                     n += 1
                 # log_err.log(f"parametro: {ms.group()}")
                 log_err.log(f"row: {i}")

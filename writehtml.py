@@ -45,7 +45,9 @@ if __name__ == "__main__":
         html = args.html
         write_append = args.wa
         with open(html_ou, write_append) as f:
-            f.write(html+os.linesep)
+            f.write(html)
+            f.write(os.linesep)
+
     except Exception as e:
         logerr.log("ERROR writehtml.py")
         logerr.log(e)
