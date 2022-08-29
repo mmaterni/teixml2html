@@ -17,10 +17,11 @@ from teimedlib.uainput import Inp
 from teimedlib.ualog import Log
 import teimedlib.pathutils as ptu
 from teimedlib.xml_node_list import XmlNodeList
+# from teimedlib.set_html_tei import set_html_tei
 
 
-__date__ = "09-08-2022"
-__version__ = "0.0.15"
+__date__ = "29-08-2022"
+__version__ = "0.0.16"
 __author__ = "Marta Materni"
 
 TEXT_NUKK = "text_null"
@@ -870,30 +871,40 @@ class Xml2Html:
             #     if item.find("<>") > -1:
             #         print(item)
 
-            print("CHeck HTML")
+            print("check HTML")
             # controllo dei parametri %par% non settati
             self.check_html()
 
             # html su una riga versione per produzione
             html_one_row = self.hb.html_onerow()
+
             # setta i parametri _..._ definiti nel file <name>.json
             html_one_row = self.set_html_paramas(html_one_row)
-            # s = "<!doctype html>"+os.linesep+html_one_row
-            s = html_one_row
+            # html_one_row = "<!doctype html>"+os.linesep+html_one_row
+            
+            #setta numerazione riga e gestion a capo
+            # print("set html_tei")
+            # html_one_row=set_html_tei(html_one_row)
+
             ptu.make_dir_of_file(html_path)
             with open(html_path, write_append) as f:
-                f.write(s)
-
+                f.write(html_one_row)
+            ########################################
             # file html formattato per controll9
-            print("HTML Format")
+            print("format HTML")
             html_format = self.hb.html_format()
+
+            # setta i parametri _..._ definiti nel file <name>.json
             html_format = self.set_html_paramas(html_format)
-            # s = "<!doctype html>"+os.linesep+html_format
-            s = html_format
-            self.check_html_format(s)
+            # html_format = "<!doctype html>"+os.linesep+html_format
+
+            #setta numerazione riga e gestion a capo
+            # html_format=set_html_tei(html_format)
+
+            self.check_html_format(html_format)
             hrml_format_path = html_path.replace(".html", "_format.html")
             with open(hrml_format_path, write_append) as f:
-                f.write(s)
+                f.write(html_format)
 
         except Exception as e:
             log_err.log(f"ERROR_D  write_html()")
